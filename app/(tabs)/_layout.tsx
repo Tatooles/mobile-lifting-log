@@ -18,7 +18,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="workouts"
+        name="workouts/index"
         options={{
           title: "Workouts",
           tabBarIcon: ({ color }) => (
@@ -31,12 +31,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="exercises"
+        name="exercises/index"
         options={{
           title: "Exercises",
           tabBarIcon: ({ color }) => (
             <Ionicons name="barbell" size={24} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="workouts/modal" // I don't like this
+        options={{
+          href: null,
         }}
       />
     </Tabs>
