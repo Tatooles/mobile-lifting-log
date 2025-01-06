@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 
-export default function Home() {
+export default function WorkoutsScreen() {
   return (
     <View style={styles.container}>
       <Text>Workouts</Text>
