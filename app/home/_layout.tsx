@@ -13,7 +13,7 @@ export default function HomeLayout() {
         },
       }}
     >
-      <Stack.Screen name="home" />
+      <Stack.Screen name="index" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="records" />
       <Stack.Screen name="calculators" />

@@ -1,13 +1,13 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 
-export default function Home() {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text>Workouts</Text>
-      <Link href="/(tabs)/workouts/modal" style={styles.link}>
-        Open modal
-      </Link>
+      <Text>Home</Text>
+      <Link href="/home/settings">View settings</Link>
+      <Link href="/home/records">View records</Link>
+      <Link href="/home/calculators">View calculators</Link>
     </View>
   );
 }
@@ -15,11 +15,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
-  },
-  link: {
-    paddingTop: 20,
-    fontSize: 20,
+    alignItems: "center",
   },
 });
