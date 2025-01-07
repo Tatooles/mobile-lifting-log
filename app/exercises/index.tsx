@@ -1,6 +1,15 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Text } from "~/components/ui/text";
 import { Exercises } from "@/types/types";
 
 export default function ExercisesScreen() {
@@ -10,15 +19,24 @@ export default function ExercisesScreen() {
     { id: 3, title: "Conventional Deadlift" },
   ]);
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Exercises</Text>
+    <View className="bg-black">
+      <Text className="text-4xl m-4">Exercises</Text>
       <FlatList
         data={exercises}
         renderItem={({ item }) => (
           // TODO: Put this in a component
-          <View style={styles.exerciseBox}>
-            <Text style={styles.exerciseText}>{item.title}</Text>
-          </View>
+          <Card className="w-full max-w-sm mb-5">
+            <CardHeader>
+              <CardTitle>Card Title</CardTitle>
+              <CardDescription>Card Description</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Text>Card Content</Text>
+            </CardContent>
+            <CardFooter>
+              <Text>Card Footer</Text>
+            </CardFooter>
+          </Card>
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No exercises yet!</Text>
