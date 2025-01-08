@@ -1,16 +1,10 @@
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { Exercises } from "@/types/types";
+import { Button } from "~/components/ui/button";
 
 export default function ExercisesScreen() {
   const [exercises, setExercises] = useState<Exercises[]>([
@@ -19,50 +13,35 @@ export default function ExercisesScreen() {
     { id: 3, title: "Conventional Deadlift" },
   ]);
   return (
-    <View className="bg-black">
+    <View className="bg-black h-full items-center">
       <Text className="text-4xl m-4">Exercises</Text>
       <FlatList
         data={exercises}
         renderItem={({ item }) => (
-          // TODO: Put this in a component
           <Card className="w-full max-w-sm mb-5">
             <CardHeader>
-              <CardTitle>Card Title</CardTitle>
-              <CardDescription>Card Description</CardDescription>
+              <CardTitle>{item.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Text>Card Content</Text>
+              <Text>Here is some information about the exercise</Text>
             </CardContent>
-            <CardFooter>
-              <Text>Card Footer</Text>
-            </CardFooter>
           </Card>
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No exercises yet!</Text>
         }
       />
-      <Link href="/exercises/modal" style={styles.link}>
-        Open modal
-      </Link>
+      <Button
+        onPress={() => router.push("/exercises/modal")}
+        variant={"secondary"}
+      >
+        <Text>Open modal</Text>
+      </Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  link: {
-    paddingTop: 20,
-    fontSize: 20,
-  },
-  title: {
-    fontSize: 30,
-    margin: 20,
-  },
   exerciseBox: {
     borderWidth: 1,
     borderColor: "#ccc",
