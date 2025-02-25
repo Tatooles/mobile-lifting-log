@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { Link } from "expo-router";
 import WorkoutBox from "./WorkoutBox";
 
@@ -29,18 +29,24 @@ export default function WorkoutsScreen() {
     // I kinda want each workout to be a pill, then it opens into a modal or drawer, then full screens when you scroll
     // Like the Apple sports app. No idea how that things works tho
     <View className="flex-1 items-center p-4">
-      <Text>Workouts</Text>
+      <Link href="/workouts/modal" asChild>
+        <TouchableOpacity className="active:opacity-80">
+          <View className="flex-row items-center bg-blue-500 px-6 py-3 rounded-full shadow-sm space-x-2 mb-4">
+            <Text className="text-white font-semibold text-xl">
+              Add Workout
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </Link>
       {workouts.map((workout) => (
         <WorkoutBox
+          key={workout.name}
           date={workout.date}
           name={workout.name}
           hours={workout.hours}
           minutes={workout.minutes}
         />
       ))}
-      <Link href="/workouts/modal" className="pt-5 text-xl">
-        Add Workout
-      </Link>
     </View>
   );
 }
