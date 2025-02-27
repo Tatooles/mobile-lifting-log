@@ -1,17 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import WorkoutForm from "./workout-form";
 
 export default function Modal() {
   return (
-    <View style={styles.container}>
-      <Text>Modal screen</Text>
+    <View className="flex flex-col items-center">
+      <WorkoutForm />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
