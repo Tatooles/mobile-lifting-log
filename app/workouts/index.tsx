@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { Link } from "expo-router";
-import WorkoutBox from "./WorkoutBox";
+import WorkoutBox from "./workout-box";
 
 export default function WorkoutsScreen() {
   // Sort by date desc
