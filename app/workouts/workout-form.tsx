@@ -71,7 +71,7 @@ export default function WorkoutForm() {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900">
+      <ScrollView className="bg-gray-50 dark:bg-gray-900">
         <View className="p-4">
           <Text className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
             New Workout
