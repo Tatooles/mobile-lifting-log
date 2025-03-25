@@ -14,9 +14,8 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 export default function WorkoutForm() {
   const [workoutName, setWorkoutName] = useState("");
   const [workoutDate, setWorkoutDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [exercises, setExercises] = useState([
-    { id: 1, name: "", sets: "", reps: "", notes: "" },
+    { id: 1, name: "", sets: [{ weight: "", reps: "" }], notes: "" },
   ]);
 
   const addExercise = () => {
@@ -24,9 +23,11 @@ export default function WorkoutForm() {
       exercises.length > 0 ? Math.max(...exercises.map((ex) => ex.id)) + 1 : 1;
     setExercises([
       ...exercises,
-      { id: newId, name: "", sets: "", reps: "", notes: "" },
+      { id: newId, name: "", sets: [{ weight: "", reps: "" }], notes: "" },
     ]);
   };
+
+  // const addSet = () => {};
 
   const removeExercise = (id: number) => {
     if (exercises.length > 1) {
@@ -34,11 +35,32 @@ export default function WorkoutForm() {
     }
   };
 
-  const updateExercise = (id: number, field: string, value: string) => {
+  const updateExercise = (
+    id: number,
+    field: string,
+    value: string,
+    setIndex?: number
+  ) => {
     setExercises(
-      exercises.map((exercise) =>
-        exercise.id === id ? { ...exercise, [field]: value } : exercise
-      )
+      exercises.map((exercise) => {
+        if (exercise.id !== id) return exercise;
+
+        // If we're updating a set's weight or reps
+        if (
+          setIndex !== undefined &&
+          (field === "weight" || field === "reps")
+        ) {
+          const updatedSets = [...exercise.sets];
+          updatedSets[setIndex] = {
+            ...updatedSets[setIndex],
+            [field]: value,
+          };
+          return { ...exercise, sets: updatedSets };
+        }
+
+        // For other fields like name or notes
+        return { ...exercise, [field]: value };
+      })
     );
   };
 
@@ -63,7 +85,7 @@ export default function WorkoutForm() {
       date: workoutDate,
       exercises: exercises,
     };
-    console.log("Workout data:", workoutData);
+    console.log("Workout data:", workoutData.exercises[0]);
     // You could send this data to an API or store it locally
   };
 
@@ -143,39 +165,41 @@ export default function WorkoutForm() {
                   />
                 </View>
 
-                {/* Sets and Reps */}
-                <View className="flex-row mb-3">
-                  <View className="flex-1 mr-2">
-                    <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                      Sets
-                    </Text>
-                    <TextInput
-                      className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                      placeholder="3"
-                      placeholderTextColor="#9CA3AF"
-                      keyboardType="numeric"
-                      value={exercise.sets}
-                      onChangeText={(text) =>
-                        updateExercise(exercise.id, "sets", text)
-                      }
-                    />
+                {/* Set information */}
+                {exercise.sets.map((set, setIndex) => (
+                  <View key={`set-${setIndex}`} className="flex-row mb-3">
+                    <View className="flex-1 mr-2">
+                      <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                        Weight
+                      </Text>
+                      <TextInput
+                        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        placeholder="3"
+                        placeholderTextColor="#9CA3AF"
+                        keyboardType="numeric"
+                        value={set.weight}
+                        onChangeText={(text) =>
+                          updateExercise(exercise.id, "weight", text, setIndex)
+                        }
+                      />
+                    </View>
+                    <View className="flex-1 ml-2">
+                      <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                        Reps
+                      </Text>
+                      <TextInput
+                        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        placeholder="10"
+                        placeholderTextColor="#9CA3AF"
+                        keyboardType="numeric"
+                        value={set.reps}
+                        onChangeText={(text) =>
+                          updateExercise(exercise.id, "reps", text, setIndex)
+                        }
+                      />
+                    </View>
                   </View>
-                  <View className="flex-1 ml-2">
-                    <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                      Reps
-                    </Text>
-                    <TextInput
-                      className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                      placeholder="10"
-                      placeholderTextColor="#9CA3AF"
-                      keyboardType="numeric"
-                      value={exercise.reps}
-                      onChangeText={(text) =>
-                        updateExercise(exercise.id, "reps", text)
-                      }
-                    />
-                  </View>
-                </View>
+                ))}
 
                 {/* Notes */}
                 <View>
