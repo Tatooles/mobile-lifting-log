@@ -27,8 +27,6 @@ export default function WorkoutForm() {
     ]);
   };
 
-  // const addSet = () => {};
-
   const removeExercise = (id: number) => {
     if (exercises.length > 1) {
       setExercises(exercises.filter((exercise) => exercise.id !== id));
@@ -58,7 +56,6 @@ export default function WorkoutForm() {
           return { ...exercise, sets: updatedSets };
         }
 
-        // For other fields like name or notes
         return { ...exercise, [field]: value };
       })
     );
@@ -86,7 +83,7 @@ export default function WorkoutForm() {
       exercises: exercises,
     };
     console.log("Workout data:", workoutData.exercises[0]);
-    // You could send this data to an API or store it locally
+    // Send this data to API or store locally
   };
 
   return (
@@ -156,7 +153,7 @@ export default function WorkoutForm() {
                   </Text>
                   <TextInput
                     className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    placeholder="e.g., Bench Press"
+                    placeholder="Exercise"
                     placeholderTextColor="#9CA3AF"
                     value={exercise.name}
                     onChangeText={(text) =>
@@ -174,7 +171,7 @@ export default function WorkoutForm() {
                       </Text>
                       <TextInput
                         className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                        placeholder="3"
+                        placeholder="135"
                         placeholderTextColor="#9CA3AF"
                         keyboardType="numeric"
                         value={set.weight}
