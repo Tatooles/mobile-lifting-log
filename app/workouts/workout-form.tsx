@@ -103,7 +103,6 @@ export default function WorkoutForm() {
             </Text>
             <TextInput
               className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder="Enter workout name"
               placeholderTextColor="#9CA3AF"
               value={workoutName}
               onChangeText={setWorkoutName}
@@ -148,9 +147,6 @@ export default function WorkoutForm() {
 
                 {/* Exercise Name */}
                 <View className="mb-3">
-                  <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                    Exercise Name
-                  </Text>
                   <TextInput
                     className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     placeholder="Exercise"
@@ -166,12 +162,9 @@ export default function WorkoutForm() {
                 {exercise.sets.map((set, setIndex) => (
                   <View key={`set-${setIndex}`} className="flex-row mb-3">
                     <View className="flex-1 mr-2">
-                      <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                        Weight
-                      </Text>
                       <TextInput
                         className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                        placeholder="135"
+                        placeholder="Weight"
                         placeholderTextColor="#9CA3AF"
                         keyboardType="numeric"
                         value={set.weight}
@@ -181,12 +174,9 @@ export default function WorkoutForm() {
                       />
                     </View>
                     <View className="flex-1 ml-2">
-                      <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                        Reps
-                      </Text>
                       <TextInput
                         className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                        placeholder="10"
+                        placeholder="Reps"
                         placeholderTextColor="#9CA3AF"
                         keyboardType="numeric"
                         value={set.reps}
@@ -200,12 +190,9 @@ export default function WorkoutForm() {
 
                 {/* Notes */}
                 <View>
-                  <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                    Notes
-                  </Text>
                   <TextInput
                     className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    placeholder="Any additional notes..."
+                    placeholder="Notes"
                     placeholderTextColor="#9CA3AF"
                     multiline={true}
                     numberOfLines={3}
