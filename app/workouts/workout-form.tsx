@@ -11,7 +11,6 @@ import {
 import { Trash2, Plus } from "lucide-react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-// Define types for our data structures
 interface ExerciseSet {
   id: number;
   reps: string;
@@ -34,7 +33,6 @@ interface WorkoutData {
 export default function WorkoutForm() {
   const [workoutName, setWorkoutName] = useState<string>("");
   const [workoutDate, setWorkoutDate] = useState<Date>(new Date());
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [exercises, setExercises] = useState<Exercise[]>([
     {
       id: 1,
@@ -139,7 +137,6 @@ export default function WorkoutForm() {
 
   const onDateChange = (event: any, selectedDate?: Date): void => {
     const currentDate = selectedDate || workoutDate;
-    setShowDatePicker(Platform.OS === "ios");
     setWorkoutDate(currentDate);
   };
 
@@ -192,22 +189,12 @@ export default function WorkoutForm() {
             <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               Date
             </Text>
-            <TouchableOpacity
-              onPress={() => setShowDatePicker(true)}
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-            >
-              <Text className="text-gray-900 dark:text-white">
-                {formatDate(workoutDate)}
-              </Text>
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={workoutDate}
-                mode="date"
-                display="default"
-                onChange={onDateChange}
-              />
-            )}
+            <DateTimePicker
+              value={workoutDate}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+            />
           </View>
 
           {/* Exercises Section */}
