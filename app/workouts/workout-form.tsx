@@ -27,6 +27,20 @@ export default function WorkoutForm() {
     ]);
   };
 
+  const addSet = (exerciseId: number) => {
+    setExercises(
+      exercises.map((exercise) => {
+        if (exercise.id === exerciseId) {
+          return {
+            ...exercise,
+            sets: [...exercise.sets, { weight: "", reps: "" }],
+          };
+        }
+        return exercise;
+      })
+    );
+  };
+
   const removeExercise = (id: number) => {
     if (exercises.length > 1) {
       setExercises(exercises.filter((exercise) => exercise.id !== id));
@@ -187,6 +201,20 @@ export default function WorkoutForm() {
                     </View>
                   </View>
                 ))}
+
+                {/* Add set button */}
+                <TouchableOpacity
+                  onPress={() => addSet(exercise.id)}
+                  className="flex-row items-center justify-center p-2 mb-3 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                >
+                  <Plus
+                    size={16}
+                    color={Platform.OS === "ios" ? "#007AFF" : "#2196F3"}
+                  />
+                  <Text className="ml-2 text-gray-800 dark:text-white font-medium">
+                    Add Set
+                  </Text>
+                </TouchableOpacity>
 
                 {/* Notes */}
                 <View>
