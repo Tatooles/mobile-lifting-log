@@ -114,6 +114,21 @@ export default function WorkoutForm() {
     );
   };
 
+  const cloneLastSet = (exerciseId: number) => {
+    setExercises(
+      exercises.map((exercise) => {
+        if (exercise.id === exerciseId && exercise.sets.length > 0) {
+          const lastSet = exercise.sets[exercise.sets.length - 1];
+          return {
+            ...exercise,
+            sets: [...exercise.sets, { ...lastSet }],
+          };
+        }
+        return exercise;
+      })
+    );
+  };
+
   const updateSet = (
     exerciseId: number,
     setId: number,
@@ -242,15 +257,6 @@ export default function WorkoutForm() {
                     <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Sets
                     </Text>
-                    <TouchableOpacity
-                      onPress={() => addSet(exercise.id)}
-                      className="flex-row items-center"
-                    >
-                      <Plus size={16} color="#3B82F6" />
-                      <Text className="ml-1 text-blue-500 font-medium">
-                        Add Set
-                      </Text>
-                    </TouchableOpacity>
                   </View>
 
                   {exercise.sets.map((set, setIndex) => (
@@ -292,6 +298,32 @@ export default function WorkoutForm() {
                       </TouchableOpacity>
                     </View>
                   ))}
+                </View>
+
+                {/* Add Set and Clone Buttons */}
+                <View className="flex-row mb-3">
+                  <TouchableOpacity
+                    onPress={() => addSet(exercise.id)}
+                    className="flex-1 flex-row items-center justify-center p-2 mr-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                  >
+                    <Plus
+                      size={16}
+                      color={Platform.OS === "ios" ? "#007AFF" : "#2196F3"}
+                    />
+                    <Text className="ml-2 text-gray-800 dark:text-white font-medium">
+                      Add Set
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => cloneLastSet(exercise.id)}
+                    className="flex-1 flex-row items-center justify-center p-2 ml-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                    disabled={exercise.sets.length === 0}
+                  >
+                    <Text className="text-gray-800 dark:text-white font-medium">
+                      Clone Last Set
+                    </Text>
+                  </TouchableOpacity>
                 </View>
 
                 {/* Notes */}
