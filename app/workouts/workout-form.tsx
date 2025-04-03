@@ -118,10 +118,12 @@ export default function WorkoutForm() {
     setExercises(
       exercises.map((exercise) => {
         if (exercise.id === exerciseId && exercise.sets.length > 0) {
-          const lastSet = exercise.sets[exercise.sets.length - 1];
+          const lastSet = { ...exercise.sets[exercise.sets.length - 1] };
+          lastSet.id++;
+
           return {
             ...exercise,
-            sets: [...exercise.sets, { ...lastSet }],
+            sets: [...exercise.sets, lastSet],
           };
         }
         return exercise;
@@ -262,7 +264,7 @@ export default function WorkoutForm() {
                   {exercise.sets.map((set, setIndex) => (
                     <View key={set.id} className="flex-row items-center mb-2">
                       <Text className="w-10 text-gray-700 dark:text-gray-300 font-medium">
-                        #{setIndex + 1}
+                        id: {set.id}
                       </Text>
                       <View className="flex-1 flex-row mr-2">
                         <View className="flex-1 mr-2">
