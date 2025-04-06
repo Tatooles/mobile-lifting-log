@@ -264,7 +264,7 @@ export default function WorkoutForm() {
                   {exercise.sets.map((set, setIndex) => (
                     <View key={set.id} className="flex-row items-center mb-2">
                       <Text className="w-10 text-gray-700 dark:text-gray-300 font-medium">
-                        id: {set.id}
+                        #{setIndex + 1}
                       </Text>
                       <View className="flex-1 flex-row mr-2">
                         <View className="flex-1 mr-2">
