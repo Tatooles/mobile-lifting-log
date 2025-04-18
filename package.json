@@ -50,7 +50,8 @@
     "react-native-webview": "13.12.5",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "@react-native-community/datetimepicker": "8.2.0"
+    "@react-native-community/datetimepicker": "8.2.0",
+    "expo-sqlite": "~15.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
