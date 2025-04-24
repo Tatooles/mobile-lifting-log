@@ -29,6 +29,7 @@ export default function WorkoutsScreen() {
     // I kinda want each workout to be a pill, then it opens into a modal or drawer, then full screens when you scroll
     // Like the Apple sports app. No idea how that things works tho
     <View className="flex-1 items-center p-4">
+      {/* TODO: Probably want a search bar at the top here */}
       <Link href="/workouts/modal" asChild>
         <TouchableOpacity className="active:opacity-80">
           <View className="flex-row items-center bg-blue-500 px-6 py-3 rounded-full shadow-sm space-x-2 mb-4">
@@ -39,6 +40,8 @@ export default function WorkoutsScreen() {
         </TouchableOpacity>
       </Link>
       {workouts.map((workout) => (
+        // Sports app opens a non-full width drawer navigation on tap
+        // And allows horizontal scroll in the drawer, could be interesting
         <WorkoutBox
           key={workout.name}
           date={workout.date}
