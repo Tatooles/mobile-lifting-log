@@ -1,29 +1,40 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { Link } from "expo-router";
 import WorkoutBox from "./workout-box";
+import { useEffect, useState } from "react";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { useSQLiteContext } from "expo-sqlite";
+import * as schema from "@/db/schema";
+import { Workout } from "~/lib/types";
 
 export default function WorkoutsScreen() {
-  // Sort by date desc
-  const workouts = [
-    {
-      date: "2025-02-27",
-      name: "Morning Cardio",
-      hours: 1,
-      minutes: 30,
-    },
-    {
-      date: "2025-02-27",
-      name: "Strength Training",
-      hours: 2,
-      minutes: 0,
-    },
-    {
-      date: "2025-02-26",
-      name: "Coach D Week 1 Day 3",
-      hours: 1,
-      minutes: 37,
-    },
-  ];
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db, { schema });
+
+  useEffect(() => {
+    const load = async () => {
+      const data: Workout[] = await drizzleDb.query.workout.findMany({
+        with: {
+          exercises: {
+            with: {
+              sets: {
+                orderBy: (sets, { asc }) => [asc(sets.id)],
+              },
+            },
+          },
+        },
+      });
+
+      data.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      console.log("~ load ~ data:", data);
+      setWorkouts(data);
+    };
+    load();
+  }, []);
 
   return (
     // I kinda want each workout to be a pill, then it opens into a modal or drawer, then full screens when you scroll
@@ -46,8 +57,6 @@ export default function WorkoutsScreen() {
           key={workout.name}
           date={workout.date}
           name={workout.name}
-          hours={workout.hours}
-          minutes={workout.minutes}
         />
       ))}
     </View>

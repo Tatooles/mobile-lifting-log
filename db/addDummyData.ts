@@ -23,6 +23,12 @@ export const addDummyData = async (db: ExpoSQLiteDatabase) => {
       name: "Random Arms",
       date: "2025-01-30",
     },
+    {
+      id: 4,
+      userId: "user_2QGZES0k1iNMVWpjPeqIGQxrVbz",
+      name: "Something",
+      date: "2025-01-30",
+    },
   ]);
 
   await db.insert(exercise).values([

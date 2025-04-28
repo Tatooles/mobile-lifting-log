@@ -8,8 +8,8 @@ const WorkoutBox = ({
 }: {
   date: string;
   name: string;
-  hours: number;
-  minutes: number;
+  hours?: number;
+  minutes?: number;
 }) => {
   return (
     // Look through more apple apps to try to make this as native as possible
