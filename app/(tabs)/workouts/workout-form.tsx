@@ -10,6 +10,10 @@ import {
 } from "react-native";
 import { Trash2, Plus } from "lucide-react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import * as schema from "@/db/schema";
+import { insertWorkout } from "~/db/insertWorkout";
 
 interface ExerciseSet {
   id: number;
@@ -24,7 +28,7 @@ interface Exercise {
   notes: string;
 }
 
-interface WorkoutData {
+export interface WorkoutData {
   name: string;
   date: Date;
   exercises: Exercise[];
@@ -41,6 +45,9 @@ export default function WorkoutForm() {
       notes: "",
     },
   ]);
+
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db);
 
   const addExercise = () => {
     const newId =
@@ -165,7 +172,7 @@ export default function WorkoutForm() {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Here you would handle form submission
     const workoutData: WorkoutData = {
       name: workoutName,
@@ -173,7 +180,8 @@ export default function WorkoutForm() {
       exercises: exercises,
     };
     console.log("Workout data:", workoutData.exercises[0]);
-    // Send this data to API or store locally
+    // Do I need to convert the type of this for the query??
+    await insertWorkout(drizzleDb, workoutData);
   };
 
   return (
