@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { Link } from "expo-router";
 import WorkoutBox from "./workout-box";
 import { useEffect, useState } from "react";
-import { drizzle } from "drizzle-orm/expo-sqlite";
+import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
@@ -13,28 +13,30 @@ export default function WorkoutsScreen() {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
 
-  useEffect(() => {
-    const load = async () => {
-      const data: Workout[] = await drizzleDb.query.workout.findMany({
-        with: {
-          exercises: {
-            with: {
-              sets: {
-                orderBy: (sets, { asc }) => [asc(sets.id)],
-              },
+  const { data } = useLiveQuery(
+    drizzleDb.query.workout.findMany({
+      with: {
+        exercises: {
+          with: {
+            sets: {
+              orderBy: (sets, { asc }) => [asc(sets.id)],
             },
           },
         },
-      });
+      },
+    })
+  );
 
-      data.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      console.log("~ load ~ data:", data);
-      setWorkouts(data);
-    };
-    load();
-  }, []);
+  useEffect(() => {
+    if (!data) return;
+
+    data.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    console.log("~ load ~ data:", data);
+    setWorkouts(data);
+  }, [data]);
 
   return (
     // I kinda want each workout to be a pill, then it opens into a modal or drawer, then full screens when you scroll
