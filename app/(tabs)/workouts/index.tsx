@@ -36,7 +36,6 @@ export default function WorkoutsScreen() {
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
-    console.log("~ load ~ data:", data);
     setWorkouts(data);
   }, [data]);
 

@@ -2,8 +2,6 @@ import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { exercise, set, workout } from "./schema";
 
 export const addDummyData = async (db: ExpoSQLiteDatabase) => {
-  console.log("inserting data");
-
   await db.insert(workout).values([
     {
       id: 1,

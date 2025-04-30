@@ -12,8 +12,8 @@ import { Trash2, Plus } from "lucide-react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import * as schema from "@/db/schema";
 import { insertWorkout } from "~/db/insertWorkout";
+import { router } from "expo-router";
 
 interface ExerciseSet {
   id: number;
@@ -160,6 +160,7 @@ export default function WorkoutForm() {
   };
 
   const onDateChange = (event: any, selectedDate?: Date): void => {
+    // TODO: This will need to be formatted properly
     const currentDate = selectedDate || workoutDate;
     setWorkoutDate(currentDate);
   };
@@ -173,15 +174,16 @@ export default function WorkoutForm() {
   };
 
   const handleSubmit = async () => {
-    // Here you would handle form submission
     const workoutData: WorkoutData = {
       name: workoutName,
       date: workoutDate,
       exercises: exercises,
     };
-    console.log("Workout data:", workoutData.exercises[0]);
-    // Do I need to convert the type of this for the query??
+
     await insertWorkout(drizzleDb, workoutData);
+
+    // Close modal
+    router.push("..");
   };
 
   return (

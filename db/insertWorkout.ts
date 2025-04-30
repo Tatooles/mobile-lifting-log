@@ -6,8 +6,6 @@ export const insertWorkout = async (
   db: ExpoSQLiteDatabase,
   workoutData: WorkoutData
 ) => {
-  console.log("inserting workout");
-
   try {
     await db.transaction(async () => {
       const workoutResult = await db.insert(workout).values({
@@ -33,7 +31,6 @@ export const insertWorkout = async (
         }
       }
     });
-    console.log("workout successfully inserted!!!");
   } catch (error) {
     console.log("An error ocurred!");
     if (error instanceof Error) console.log(error.message);
