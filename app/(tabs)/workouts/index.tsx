@@ -6,12 +6,14 @@ import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
+  useDrizzleStudio(db);
 
   const { data } = useLiveQuery(
     drizzleDb.query.workout.findMany({
