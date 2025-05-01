@@ -27,6 +27,7 @@ export default function RootLayout() {
   }, [success]);
 
   return (
+    // TODO: Should probably add safe area around this
     <SQLiteProvider
       databaseName={DATABASE_NAME}
       options={{ enableChangeListener: true }}

@@ -7,6 +7,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import { FlatList } from "react-native";
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -42,26 +43,27 @@ export default function WorkoutsScreen() {
   return (
     // I kinda want each workout to be a pill, then it opens into a modal or drawer, then full screens when you scroll
     // Like the Apple sports app. No idea how that things works tho
-    <View className="flex-1 items-center p-4">
+    <View className="flex-1">
       {/* TODO: Probably want a search bar at the top here */}
-      <Link href="/workouts/modal" asChild>
-        <TouchableOpacity className="active:opacity-80">
-          <View className="flex-row items-center bg-blue-500 px-6 py-3 rounded-full shadow-sm space-x-2 mb-4">
-            <Text className="text-white font-semibold text-xl">
-              Add Workout
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </Link>
-      {workouts.map((workout) => (
-        // Sports app opens a non-full width drawer navigation on tap
-        // And allows horizontal scroll in the drawer, could be interesting
-        <WorkoutBox
-          key={workout.name}
-          date={workout.date}
-          name={workout.name}
-        />
-      ))}
+      <View className="items-center my-4">
+        <Link href="/workouts/modal" asChild>
+          <TouchableOpacity className="active:opacity-80">
+            <View className="flex-row items-center bg-blue-500 px-6 py-3 rounded-full shadow-sm space-x-2">
+              <Text className="text-white font-semibold text-xl">
+                Add Workout
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </Link>
+      </View>
+      <FlatList
+        // TODO: Move button into a list header
+        data={workouts}
+        renderItem={({ item }) => (
+          <WorkoutBox key={item.name} date={item.date} name={item.name} />
+        )}
+        keyExtractor={(item) => item.name}
+      />
     </View>
   );
 }
