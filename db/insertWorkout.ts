@@ -26,7 +26,7 @@ export const insertWorkout = async (
             exerciseId: Number(exerciseResult.lastInsertRowId),
             reps: setData.reps,
             weight: setData.weight,
-            // rpe: setData.rpe,
+            rpe: setData.rpe,
           });
         }
       }
