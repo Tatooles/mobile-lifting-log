@@ -10,6 +10,10 @@ import {
 } from "react-native";
 import { Trash2, Plus } from "lucide-react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { insertWorkout } from "~/db/insertWorkout";
+import { router } from "expo-router";
 
 interface ExerciseSet {
   id: number;
@@ -24,7 +28,7 @@ interface Exercise {
   notes: string;
 }
 
-interface WorkoutData {
+export interface WorkoutData {
   name: string;
   date: Date;
   exercises: Exercise[];
@@ -41,6 +45,9 @@ export default function WorkoutForm() {
       notes: "",
     },
   ]);
+
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db);
 
   const addExercise = () => {
     const newId =
@@ -153,6 +160,7 @@ export default function WorkoutForm() {
   };
 
   const onDateChange = (event: any, selectedDate?: Date): void => {
+    // TODO: This will need to be formatted properly
     const currentDate = selectedDate || workoutDate;
     setWorkoutDate(currentDate);
   };
@@ -165,15 +173,17 @@ export default function WorkoutForm() {
     });
   };
 
-  const handleSubmit = () => {
-    // Here you would handle form submission
+  const handleSubmit = async () => {
     const workoutData: WorkoutData = {
       name: workoutName,
       date: workoutDate,
       exercises: exercises,
     };
-    console.log("Workout data:", workoutData.exercises[0]);
-    // Send this data to API or store locally
+
+    await insertWorkout(drizzleDb, workoutData);
+
+    // Close modal
+    router.push("..");
   };
 
   return (
