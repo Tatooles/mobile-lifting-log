@@ -1,5 +1,12 @@
-import { View, Text, Pressable } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { View, Text } from "react-native";
 
 export default function WorkoutDetails() {
-  return <Text className="text-sm text-gray-600 mb-1">Something</Text>;
+  const { id } = useLocalSearchParams();
+
+  return (
+    <View className="items-center">
+      <Text>Details page for workout {id}</Text>
+    </View>
+  );
 }
