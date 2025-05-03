@@ -280,44 +280,31 @@ export default function WorkoutForm() {
                       <Text className="w-10 text-gray-700 dark:text-gray-300 font-medium">
                         #{setIndex + 1}
                       </Text>
-                      <View className="flex-1 flex-row mr-2">
-                        {/* TODO: Prob make these boxes a component to clean things up */}
-                        <View className="flex-1 mr-2">
-                          <TextInput
-                            className="p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                            placeholder="Reps"
-                            placeholderTextColor="#9CA3AF"
-                            keyboardType="numeric"
-                            value={set.reps}
-                            onChangeText={(text) =>
-                              updateSet(exercise.id, set.id, "reps", text)
-                            }
-                          />
-                        </View>
-                        <View className="flex-1 mr-2">
-                          <TextInput
-                            className="p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                            placeholder="Weight"
-                            placeholderTextColor="#9CA3AF"
-                            keyboardType="numeric"
-                            value={set.weight}
-                            onChangeText={(text) =>
-                              updateSet(exercise.id, set.id, "weight", text)
-                            }
-                          />
-                        </View>
-                        <View className="flex-1">
-                          <TextInput
-                            className="p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                            placeholder="RPE"
-                            placeholderTextColor="#9CA3AF"
-                            keyboardType="numeric"
-                            value={set.rpe}
-                            onChangeText={(text) =>
-                              updateSet(exercise.id, set.id, "rpe", text)
-                            }
-                          />
-                        </View>
+                      <View className="flex-1 flex-row mr-2 gap-2">
+                        <SetField
+                          value={set.reps}
+                          exerciseId={exercise.id}
+                          setId={set.id}
+                          field="reps"
+                          placeholder="Reps"
+                          updateFunction={updateSet}
+                        />
+                        <SetField
+                          value={set.reps}
+                          exerciseId={exercise.id}
+                          setId={set.id}
+                          field="weight"
+                          placeholder="Weight"
+                          updateFunction={updateSet}
+                        />
+                        <SetField
+                          value={set.reps}
+                          exerciseId={exercise.id}
+                          setId={set.id}
+                          field="rpe"
+                          placeholder="RPE"
+                          updateFunction={updateSet}
+                        />
                       </View>
                       <TouchableOpacity
                         onPress={() => removeSet(exercise.id, set.id)}
@@ -400,3 +387,37 @@ export default function WorkoutForm() {
     </KeyboardAvoidingView>
   );
 }
+
+const SetField = ({
+  value,
+  exerciseId,
+  setId,
+  field,
+  placeholder,
+  updateFunction,
+}: {
+  value: any;
+  exerciseId: number;
+  setId: number;
+  field: keyof ExerciseSet;
+  placeholder: string;
+  updateFunction: (
+    exerciseId: number,
+    setId: number,
+    field: keyof ExerciseSet,
+    value: string
+  ) => void;
+}) => {
+  return (
+    <View className="flex-1">
+      <TextInput
+        className="p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+        placeholder={placeholder}
+        placeholderTextColor="#9CA3AF"
+        keyboardType="numeric"
+        value={value}
+        onChangeText={(text) => updateFunction(exerciseId, setId, field, text)}
+      />
+    </View>
+  );
+};
