@@ -27,12 +27,13 @@ export default function RootLayout() {
   }, [success]);
 
   return (
-    // TODO: Should probably add safe area around this
     <SQLiteProvider
       databaseName={DATABASE_NAME}
       options={{ enableChangeListener: true }}
     >
-      <Tabs screenOptions={{ tabBarActiveTintColor: "teal" }}>
+      <Tabs
+        screenOptions={{ headerShown: false, tabBarActiveTintColor: "teal" }}
+      >
         <Tabs.Screen
           name="home"
           options={{

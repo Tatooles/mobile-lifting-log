@@ -1,11 +1,11 @@
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { Workout } from "~/lib/types";
 import * as schema from "@/db/schema";
-import { Calendar, ClipboardList, Dumbbell } from "lucide-react-native";
+import { ClipboardList, Dumbbell } from "lucide-react-native";
 
 export default function WorkoutDetails() {
   const { id } = useLocalSearchParams();
@@ -52,18 +52,13 @@ export default function WorkoutDetails() {
 
   return (
     <ScrollView className="flex-1">
-      {/* Header */}
-      <View className="px-4 py-4 border-b border-gray-200">
-        <View className="flex-row items-center">
-          <Text className="text-2xl font-bold text-gray-800 flex-1">
-            {workout?.name}
-          </Text>
-        </View>
+      <Stack.Screen options={{ title: `${formattedDate}` }} />
 
-        <View className="flex-row items-center mt-3">
-          <Calendar size={18} color="#6B7280" />
-          <Text className="ml-2 text-gray-600">{formattedDate}</Text>
-        </View>
+      {/* Header */}
+      <View className="px-4 py-4 flex-row items-center">
+        <Text className="text-2xl font-bold text-gray-800 flex-1">
+          {workout?.name}
+        </Text>
       </View>
 
       {/* Exercises */}
