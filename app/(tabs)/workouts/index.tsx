@@ -50,7 +50,7 @@ export default function WorkoutsScreen() {
         <View className="items-center my-4">
           <Link href="/workouts/modal" asChild>
             <TouchableOpacity className="active:opacity-80">
-              <View className="flex-row items-center bg-blue-500 px-6 py-3 rounded-full shadow-sm space-x-2">
+              <View className="flex-row items-center bg-[#008080] px-6 py-3 rounded-full shadow-sm space-x-2">
                 <Text className="text-white font-semibold text-xl">
                   Add Workout
                 </Text>
@@ -65,6 +65,7 @@ export default function WorkoutsScreen() {
           key={item.name}
           date={item.date}
           name={item.name}
+          exerciseCount={item.exercises.length}
         />
       )}
       keyExtractor={(item) => item.name}

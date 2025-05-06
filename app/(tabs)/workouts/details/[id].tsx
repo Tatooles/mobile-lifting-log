@@ -6,6 +6,7 @@ import { View, Text, ScrollView } from "react-native";
 import { Workout } from "~/lib/types";
 import * as schema from "@/db/schema";
 import { ClipboardList, Dumbbell } from "lucide-react-native";
+import { formatDate } from "~/lib/dateUtils";
 
 export default function WorkoutDetails() {
   const { id } = useLocalSearchParams();
@@ -34,19 +35,6 @@ export default function WorkoutDetails() {
       setWorkout(data);
     })();
   }, []);
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "No date";
-
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Invalid date";
-
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   const formattedDate = formatDate(workout?.date);
 
