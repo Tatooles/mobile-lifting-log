@@ -60,7 +60,12 @@ export default function WorkoutsScreen() {
         </View>
       }
       renderItem={({ item }) => (
-        <WorkoutBox key={item.name} date={item.date} name={item.name} />
+        <WorkoutBox
+          id={item.id}
+          key={item.name}
+          date={item.date}
+          name={item.name}
+        />
       )}
       keyExtractor={(item) => item.name}
     />

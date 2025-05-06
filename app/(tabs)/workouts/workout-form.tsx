@@ -290,7 +290,7 @@ export default function WorkoutForm() {
                           updateFunction={updateSet}
                         />
                         <SetField
-                          value={set.reps}
+                          value={set.weight}
                           exerciseId={exercise.id}
                           setId={set.id}
                           field="weight"
@@ -298,7 +298,7 @@ export default function WorkoutForm() {
                           updateFunction={updateSet}
                         />
                         <SetField
-                          value={set.reps}
+                          value={set.rpe}
                           exerciseId={exercise.id}
                           setId={set.id}
                           field="rpe"
