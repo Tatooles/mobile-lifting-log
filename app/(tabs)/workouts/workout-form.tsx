@@ -9,7 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { Trash2, Plus } from "lucide-react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+// import DateTimePicker from "@react-native-community/datetimepicker";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { insertWorkout } from "~/db/insertWorkout";
@@ -220,12 +220,12 @@ export default function WorkoutForm() {
             <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               Date
             </Text>
-            <DateTimePicker
+            {/* <DateTimePicker
               value={workoutDate}
               mode="date"
               display="default"
               onChange={onDateChange}
-            />
+            /> */}
           </View>
 
           {/* Exercises Section */}
