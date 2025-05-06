@@ -55,10 +55,11 @@ export default function WorkoutDetails() {
       <Stack.Screen options={{ title: `${formattedDate}` }} />
 
       {/* Header */}
-      <View className="px-4 py-4 flex-row items-center">
+      <View className="px-4 pt-4 flex-row items-center">
         <Text className="text-2xl font-bold text-gray-800 flex-1">
           {workout?.name}
         </Text>
+        {/* Would be nice to have the length of the workout here */}
       </View>
 
       {/* Exercises */}
@@ -76,6 +77,7 @@ export default function WorkoutDetails() {
           >
             <View className="flex-row items-center mb-2">
               <Dumbbell size={20} color="#4B5563" />
+              {/* This will eventually need to be clickable to see the history of this exercise */}
               <Text className="ml-2 text-lg font-semibold text-gray-800">
                 {exercise.name}
               </Text>
