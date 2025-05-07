@@ -16,6 +16,8 @@ const WorkoutBox = ({
   // Look through more apple apps to try to make this as native as possible
   // Fitness app is a decent start
   return (
+    // TODO: Apple Fitness app allows the user to slide to delete with a modal for confirmation
+    // Should try to replicate that
     <Link href={`/workouts/details/${id}`} asChild>
       <Pressable className="bg-gray-300 p-4 mx-4 my-1 rounded-lg flex-col items-center">
         <Text className="text-sm text-gray-600 mb-1">{formatDate(date)}</Text>
