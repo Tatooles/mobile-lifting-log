@@ -13,13 +13,15 @@ function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
     console.log("appliedTranslation:", drag.value);
 
     return {
-      transform: [{ translateX: drag.value + 50 }],
+      transform: [{ translateX: drag.value + 100 }],
     };
   });
 
   return (
     <Reanimated.View style={styleAnimation}>
-      <Text className="h-full bg-red-700">Delete</Text>
+      <View className="h-full w-[100px] bg-red-700 rounded-lg flex items-center justify-center">
+        <Text className="text-white">Delete</Text>
+      </View>
     </Reanimated.View>
   );
 }
