@@ -1,15 +1,38 @@
-import { Text, TouchableOpacity, View } from "react-native";
+"use client";
+
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  SafeAreaView,
+  StatusBar,
+} from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { Trash } from "lucide-react-native";
+import type { JSX } from "react/jsx-runtime";
 import { Link } from "expo-router";
 import WorkoutBox from "./workout-box";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import { FlatList } from "react-native";
 
-export default function WorkoutsScreen() {
+// Format date to a more readable format
+const formatDate = (dateString: string): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
+const WorkoutList = (): JSX.Element => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
   const db = useSQLiteContext();
@@ -40,35 +63,107 @@ export default function WorkoutsScreen() {
     setWorkouts(data);
   }, [data]);
 
-  return (
-    // I kinda want each workout to be a pill, then it opens into a modal or drawer, then full screens when you scroll
-    // Like the Apple sports app. No idea how that things works tho
-    // TODO: Probably want a search bar at the top here
-    <FlatList
-      data={workouts}
-      ListHeaderComponent={
-        <View className="items-center my-4">
-          <Link href="/workouts/modal" asChild>
-            <TouchableOpacity className="active:opacity-80">
-              <View className="flex-row items-center bg-[#008080] px-6 py-3 rounded-full shadow-sm space-x-2">
-                <Text className="text-white font-semibold text-xl">
-                  Add Workout
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </Link>
+  const handleDeleteWorkout = (id: number): void => {
+    Alert.alert(
+      "Delete Workout",
+      "Are you sure you want to delete this workout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => {
+            // TODO: Implement delete query
+            //setWorkouts(workouts.filter((workout) => workout.id !== id));
+          },
+          style: "destructive",
+        },
+      ]
+    );
+  };
+
+  const handleWorkoutPress = (workout: Workout): void => {
+    console.log(`Workout pressed: ${workout.name}`);
+  };
+
+  const handleAddWorkout = (): void => {
+    console.log("Add workout pressed");
+  };
+
+  const renderRightActions = (
+    _progress: any,
+    _dragX: any,
+    workout: Workout
+  ): JSX.Element => {
+    return (
+      <View className="h-full">
+        <TouchableOpacity
+          className="bg-red-500 justify-center items-center w-20 h-full rounded-lg"
+          onPress={() => handleDeleteWorkout(workout.id)}
+        >
+          <Trash size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderWorkoutItem = ({ item }: { item: Workout }): JSX.Element => (
+    <View className="mb-3">
+      <Swipeable
+        renderRightActions={(progress, dragX) =>
+          renderRightActions(progress, dragX, item)
+        }
+        rightThreshold={40}
+        overshootRight={false}
+      >
+        <View className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+          <TouchableOpacity onPress={() => handleWorkoutPress(item)}>
+            <View className="p-4">
+              <Text className="text-lg font-bold mb-1 text-gray-800">
+                {item.name}
+              </Text>
+              <Text className="text-sm text-gray-600 mb-1">
+                {formatDate(item.date)}
+              </Text>
+              <Text className="text-sm text-gray-500">
+                {item.exercises.length}{" "}
+                {item.exercises.length === 1 ? "exercise" : "exercises"}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      }
-      renderItem={({ item }) => (
-        <WorkoutBox
-          id={item.id}
-          key={item.name}
-          date={item.date}
-          name={item.name}
-          exerciseCount={item.exercises.length}
-        />
-      )}
-      keyExtractor={(item) => item.name}
-    />
+      </Swipeable>
+    </View>
   );
-}
+
+  const renderHeader = (): JSX.Element => (
+    <Link href="/workouts/modal" asChild>
+      <TouchableOpacity
+        className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
+        onPress={handleAddWorkout}
+      >
+        <Text className="text-white font-bold text-base">Add Workout</Text>
+      </TouchableOpacity>
+    </Link>
+  );
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-200">
+      <StatusBar barStyle="dark-content" />
+      <View className="p-4 bg-white border-b border-gray-300 shadow-sm">
+        <Text className="text-2xl font-bold text-gray-800">My Workouts</Text>
+      </View>
+      <FlatList
+        data={workouts}
+        renderItem={renderWorkoutItem}
+        keyExtractor={(item) => item.id.toString()}
+        ListHeaderComponent={renderHeader}
+        contentContainerStyle={{ padding: 16 }}
+      />
+    </SafeAreaView>
+  );
+};
+
+export default WorkoutList;
