@@ -14,7 +14,6 @@ import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { insertWorkout } from "~/db/insertWorkout";
 import { router } from "expo-router";
-import Example from "./example";
 
 interface ExerciseSet {
   id: number;
@@ -197,7 +196,6 @@ export default function WorkoutForm() {
       className="flex-1"
     >
       <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900">
-        <Example />
         <View className="p-4">
           <Text className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
             New Workout

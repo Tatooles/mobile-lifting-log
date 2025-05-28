@@ -13,27 +13,14 @@ import { FlatList } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Trash } from "lucide-react-native";
 import type { JSX } from "react/jsx-runtime";
-
-export interface Workout {
-  id: string;
-  name: string;
-  date: string;
-  exerciseCount: number;
-}
-
-// Mock data for workouts
-const initialWorkouts: Workout[] = [
-  {
-    id: "1",
-    name: "Upper Body Strength",
-    date: "2023-05-10",
-    exerciseCount: 5,
-  },
-  { id: "2", name: "Leg Day", date: "2023-05-08", exerciseCount: 4 },
-  { id: "3", name: "Push Day", date: "2023-05-05", exerciseCount: 6 },
-  { id: "4", name: "Pull Day", date: "2023-05-03", exerciseCount: 5 },
-  { id: "5", name: "Full Body Workout", date: "2023-05-01", exerciseCount: 8 },
-];
+import { Link } from "expo-router";
+import WorkoutBox from "./workout-box";
+import { useEffect } from "react";
+import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useSQLiteContext } from "expo-sqlite";
+import * as schema from "@/db/schema";
+import { Workout } from "~/lib/types";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 
 // Format date to a more readable format
 const formatDate = (dateString: string): string => {
@@ -46,9 +33,37 @@ const formatDate = (dateString: string): string => {
 };
 
 const WorkoutList = (): JSX.Element => {
-  const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts);
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-  const handleDeleteWorkout = (id: string): void => {
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db, { schema });
+  useDrizzleStudio(db);
+
+  const { data } = useLiveQuery(
+    drizzleDb.query.workout.findMany({
+      with: {
+        exercises: {
+          with: {
+            sets: {
+              orderBy: (sets, { asc }) => [asc(sets.id)],
+            },
+          },
+        },
+      },
+    })
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    data.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    setWorkouts(data);
+  }, [data]);
+
+  const handleDeleteWorkout = (id: number): void => {
     Alert.alert(
       "Delete Workout",
       "Are you sure you want to delete this workout?",
@@ -60,7 +75,8 @@ const WorkoutList = (): JSX.Element => {
         {
           text: "Delete",
           onPress: () => {
-            setWorkouts(workouts.filter((workout) => workout.id !== id));
+            // TODO: Implement delete query
+            //setWorkouts(workouts.filter((workout) => workout.id !== id));
           },
           style: "destructive",
         },
@@ -112,8 +128,8 @@ const WorkoutList = (): JSX.Element => {
                 {formatDate(item.date)}
               </Text>
               <Text className="text-sm text-gray-500">
-                {item.exerciseCount}{" "}
-                {item.exerciseCount === 1 ? "exercise" : "exercises"}
+                {item.exercises.length}{" "}
+                {item.exercises.length === 1 ? "exercise" : "exercises"}
               </Text>
             </View>
           </TouchableOpacity>
@@ -123,12 +139,14 @@ const WorkoutList = (): JSX.Element => {
   );
 
   const renderHeader = (): JSX.Element => (
-    <TouchableOpacity
-      className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
-      onPress={handleAddWorkout}
-    >
-      <Text className="text-white font-bold text-base">Add Workout</Text>
-    </TouchableOpacity>
+    <Link href="/workouts/modal" asChild>
+      <TouchableOpacity
+        className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
+        onPress={handleAddWorkout}
+      >
+        <Text className="text-white font-bold text-base">Add Workout</Text>
+      </TouchableOpacity>
+    </Link>
   );
 
   return (
@@ -140,7 +158,7 @@ const WorkoutList = (): JSX.Element => {
       <FlatList
         data={workouts}
         renderItem={renderWorkoutItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         ListHeaderComponent={renderHeader}
         contentContainerStyle={{ padding: 16 }}
       />
