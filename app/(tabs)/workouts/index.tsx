@@ -82,9 +82,9 @@ const WorkoutList = (): JSX.Element => {
     workout: Workout
   ): JSX.Element => {
     return (
-      <View className="flex-row">
+      <View className="h-full">
         <TouchableOpacity
-          className="bg-red-500 justify-center items-center w-20 h-full"
+          className="bg-red-500 justify-center items-center w-20 h-full rounded-lg"
           onPress={() => handleDeleteWorkout(workout.id)}
         >
           <Trash size={24} color="#fff" />
@@ -94,32 +94,32 @@ const WorkoutList = (): JSX.Element => {
   };
 
   const renderWorkoutItem = ({ item }: { item: Workout }): JSX.Element => (
-    <Swipeable
-      renderRightActions={(progress, dragX) =>
-        renderRightActions(progress, dragX, item)
-      }
-      rightThreshold={40}
-      overshootRight={false}
-      containerStyle={{ overflow: "hidden" }}
-    >
-      <TouchableOpacity
-        className="bg-white rounded-lg mb-3 overflow-hidden shadow-md border border-gray-200"
-        onPress={() => handleWorkoutPress(item)}
+    <View className="mb-3">
+      <Swipeable
+        renderRightActions={(progress, dragX) =>
+          renderRightActions(progress, dragX, item)
+        }
+        rightThreshold={40}
+        overshootRight={false}
       >
-        <View className="p-4">
-          <Text className="text-lg font-bold mb-1 text-gray-800">
-            {item.name}
-          </Text>
-          <Text className="text-sm text-gray-600 mb-1">
-            {formatDate(item.date)}
-          </Text>
-          <Text className="text-sm text-gray-500">
-            {item.exerciseCount}{" "}
-            {item.exerciseCount === 1 ? "exercise" : "exercises"}
-          </Text>
+        <View className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+          <TouchableOpacity onPress={() => handleWorkoutPress(item)}>
+            <View className="p-4">
+              <Text className="text-lg font-bold mb-1 text-gray-800">
+                {item.name}
+              </Text>
+              <Text className="text-sm text-gray-600 mb-1">
+                {formatDate(item.date)}
+              </Text>
+              <Text className="text-sm text-gray-500">
+                {item.exerciseCount}{" "}
+                {item.exerciseCount === 1 ? "exercise" : "exercises"}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-    </Swipeable>
+      </Swipeable>
+    </View>
   );
 
   const renderHeader = (): JSX.Element => (
