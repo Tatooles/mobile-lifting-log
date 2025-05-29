@@ -47,9 +47,7 @@ export default function WorkoutDetails() {
         <Text className="text-2xl font-bold text-gray-800 flex-1">
           {workout?.name}
         </Text>
-        {/* TODO: Likely going to have delete button here, on the top right of the workout details page
-                  Other option is to have it as a slide and delete within the list */}
-        {/* Would be nice to have the length of the workout here */}
+        {/* Would be nice to have the duration of the workout here */}
       </View>
 
       {/* Exercises */}

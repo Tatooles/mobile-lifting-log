@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, SafeAreaView, StatusBar, Pressable } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { useEffect } from "react";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
@@ -10,7 +10,7 @@ import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import WorkoutItem from "./workout-item";
 
-const WorkoutList = (): JSX.Element => {
+export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
   const db = useSQLiteContext();
@@ -42,28 +42,23 @@ const WorkoutList = (): JSX.Element => {
   }, [data]);
 
   const renderHeader = () => (
-    <Link href="/workouts/modal" asChild>
-      <Pressable className="bg-blue-500 p-4 rounded-lg mb-4 items-center">
-        <Text className="text-white font-bold text-base">Add Workout</Text>
-      </Pressable>
-    </Link>
+    <Pressable
+      className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
+      onPress={() => router.push("/workouts/workout-form")}
+    >
+      <Text className="text-white font-bold text-base">Add Workout</Text>
+    </Pressable>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-200">
-      <StatusBar barStyle="dark-content" />
-      <View className="p-4 bg-white border-b border-gray-300 shadow-sm">
-        <Text className="text-2xl font-bold text-gray-800">My Workouts</Text>
-      </View>
+    <SafeAreaView className="bg-gray-200">
       <FlatList
         data={workouts}
+        ListHeaderComponent={renderHeader}
         renderItem={({ item }) => <WorkoutItem workout={item} />}
         keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponent={renderHeader}
-        contentContainerStyle={{ padding: 16 }}
+        className="p-4"
       />
     </SafeAreaView>
   );
-};
-
-export default WorkoutList;
+}
