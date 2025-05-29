@@ -8,29 +8,19 @@ import {
   Alert,
   SafeAreaView,
   StatusBar,
+  Pressable,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Trash } from "lucide-react-native";
-import type { JSX } from "react/jsx-runtime";
 import { Link } from "expo-router";
-import WorkoutBox from "./workout-box";
 import { useEffect } from "react";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-
-// Format date to a more readable format
-const formatDate = (dateString: string): string => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-};
+import { formatDate } from "~/lib/dateUtils";
 
 const WorkoutList = (): JSX.Element => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -63,7 +53,7 @@ const WorkoutList = (): JSX.Element => {
     setWorkouts(data);
   }, [data]);
 
-  const handleDeleteWorkout = (id: number): void => {
+  const handleDeleteWorkout = (id: number) => {
     Alert.alert(
       "Delete Workout",
       "Are you sure you want to delete this workout?",
@@ -84,11 +74,11 @@ const WorkoutList = (): JSX.Element => {
     );
   };
 
-  const handleWorkoutPress = (workout: Workout): void => {
+  const handleWorkoutPress = (workout: Workout) => {
     console.log(`Workout pressed: ${workout.name}`);
   };
 
-  const handleAddWorkout = (): void => {
+  const handleAddWorkout = () => {
     console.log("Add workout pressed");
   };
 
@@ -96,9 +86,9 @@ const WorkoutList = (): JSX.Element => {
     _progress: any,
     _dragX: any,
     workout: Workout
-  ): JSX.Element => {
+  ) => {
     return (
-      <View className="h-full">
+      <View className="h-full ml-2">
         <TouchableOpacity
           className="bg-red-500 justify-center items-center w-20 h-full rounded-lg"
           onPress={() => handleDeleteWorkout(workout.id)}
@@ -109,7 +99,7 @@ const WorkoutList = (): JSX.Element => {
     );
   };
 
-  const renderWorkoutItem = ({ item }: { item: Workout }): JSX.Element => (
+  const renderWorkoutItem = ({ item }: { item: Workout }) => (
     <View className="mb-3">
       <Swipeable
         renderRightActions={(progress, dragX) =>
@@ -118,34 +108,32 @@ const WorkoutList = (): JSX.Element => {
         rightThreshold={40}
         overshootRight={false}
       >
-        <View className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
-          <TouchableOpacity onPress={() => handleWorkoutPress(item)}>
-            <View className="p-4">
-              <Text className="text-lg font-bold mb-1 text-gray-800">
-                {item.name}
-              </Text>
-              <Text className="text-sm text-gray-600 mb-1">
-                {formatDate(item.date)}
-              </Text>
-              <Text className="text-sm text-gray-500">
-                {item.exercises.length}{" "}
-                {item.exercises.length === 1 ? "exercise" : "exercises"}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        <Link href={`/workouts/details/${item.id}`} asChild>
+          <Pressable className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 p-4">
+            <Text className="text-lg font-bold mb-1 text-gray-800">
+              {item.name}
+            </Text>
+            <Text className="text-sm text-gray-600 mb-1">
+              {formatDate(item.date)}
+            </Text>
+            <Text className="text-sm text-gray-500">
+              {item.exercises.length}{" "}
+              {item.exercises.length === 1 ? "exercise" : "exercises"}
+            </Text>
+          </Pressable>
+        </Link>
       </Swipeable>
     </View>
   );
 
-  const renderHeader = (): JSX.Element => (
+  const renderHeader = () => (
     <Link href="/workouts/modal" asChild>
-      <TouchableOpacity
+      <Pressable
         className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
         onPress={handleAddWorkout}
       >
         <Text className="text-white font-bold text-base">Add Workout</Text>
-      </TouchableOpacity>
+      </Pressable>
     </Link>
   );
 
