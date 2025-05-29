@@ -4,8 +4,14 @@ import { formatDate } from "~/lib/dateUtils";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Trash } from "lucide-react-native";
 import { Workout } from "~/lib/types";
+import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { deleteWorkout } from "~/db/deleteWorkout";
 
 const WorkoutBox = ({ workout }: { workout: Workout }) => {
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db);
+
   const handleDeleteWorkout = (id: number) => {
     Alert.alert(
       "Delete Workout",
@@ -17,9 +23,8 @@ const WorkoutBox = ({ workout }: { workout: Workout }) => {
         },
         {
           text: "Delete",
-          onPress: () => {
-            // TODO: Implement delete query
-            //setWorkouts(workouts.filter((workout) => workout.id !== id));
+          onPress: async () => {
+            await deleteWorkout(drizzleDb, id);
           },
           style: "destructive",
         },
