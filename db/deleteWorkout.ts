@@ -1,14 +1,16 @@
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { workout } from "./schema";
 import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 export const deleteWorkout = async (
   db: ExpoSQLiteDatabase,
   workoutId: number
 ) => {
   try {
-    // Cascade delete may not be working as expected
-    // TODO: Check if this is the case
+    // Enable foreign key support
+    await db.run(sql`PRAGMA foreign_keys = ON;`);
+
     await db.delete(workout).where(eq(workout.id, workoutId));
   } catch (error) {
     console.log("An error ocurred!");
