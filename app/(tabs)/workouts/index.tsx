@@ -1,13 +1,14 @@
-import { Text, TouchableOpacity, View } from "react-native";
-import { Link } from "expo-router";
-import WorkoutBox from "./workout-box";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { View, Text, SafeAreaView, StatusBar, Pressable } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+import { router } from "expo-router";
+import { useEffect } from "react";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import { FlatList } from "react-native";
+import WorkoutItem from "./workout-item";
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -40,35 +41,24 @@ export default function WorkoutsScreen() {
     setWorkouts(data);
   }, [data]);
 
+  const renderHeader = () => (
+    <Pressable
+      className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
+      onPress={() => router.push("/workouts/workout-form")}
+    >
+      <Text className="text-white font-bold text-base">Add Workout</Text>
+    </Pressable>
+  );
+
   return (
-    // I kinda want each workout to be a pill, then it opens into a modal or drawer, then full screens when you scroll
-    // Like the Apple sports app. No idea how that things works tho
-    // TODO: Probably want a search bar at the top here
-    <FlatList
-      data={workouts}
-      ListHeaderComponent={
-        <View className="items-center my-4">
-          <Link href="/workouts/modal" asChild>
-            <TouchableOpacity className="active:opacity-80">
-              <View className="flex-row items-center bg-[#008080] px-6 py-3 rounded-full shadow-sm space-x-2">
-                <Text className="text-white font-semibold text-xl">
-                  Add Workout
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      }
-      renderItem={({ item }) => (
-        <WorkoutBox
-          id={item.id}
-          key={item.name}
-          date={item.date}
-          name={item.name}
-          exerciseCount={item.exercises.length}
-        />
-      )}
-      keyExtractor={(item) => item.name}
-    />
+    <SafeAreaView className="bg-gray-200">
+      <FlatList
+        data={workouts}
+        ListHeaderComponent={renderHeader}
+        renderItem={({ item }) => <WorkoutItem workout={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        className="p-4"
+      />
+    </SafeAreaView>
   );
 }

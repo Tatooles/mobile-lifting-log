@@ -5,7 +5,7 @@ export default function Layout() {
     <Stack>
       <Stack.Screen name="index" options={{ title: "Workouts" }} />
       <Stack.Screen
-        name="modal"
+        name="workout-form"
         options={{
           presentation: "modal",
         }}
