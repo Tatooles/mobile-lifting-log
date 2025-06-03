@@ -58,7 +58,7 @@ const WorkoutBox = ({ workout }: { workout: Workout }) => {
         rightThreshold={40}
         overshootRight={false}
       >
-        <Link href={`/workouts/details/${workout.id}`} asChild>
+        <Link href={`/details/${workout.id}`} asChild>
           <Pressable className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 p-4">
             <Text className="text-lg font-bold mb-1 text-gray-800">
               {workout.name}

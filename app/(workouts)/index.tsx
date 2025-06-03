@@ -44,7 +44,7 @@ export default function WorkoutsScreen() {
   const renderHeader = () => (
     <Pressable
       className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
-      onPress={() => router.push("/workouts/workout-form")}
+      onPress={() => router.push("/workout-form")}
     >
       <Text className="text-white font-bold text-base">Add Workout</Text>
     </Pressable>
