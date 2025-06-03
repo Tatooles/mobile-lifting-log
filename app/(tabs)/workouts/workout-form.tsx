@@ -189,10 +189,6 @@ export default function WorkoutForm() {
     >
       <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900">
         <View className="p-4">
-          <Text className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-            New Workout
-          </Text>
-
           {/* Workout Name */}
           <View className="mb-4">
             <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">

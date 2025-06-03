@@ -13,8 +13,8 @@ export default function RootLayout() {
         name="home"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome size={size} name="home" color={color} />
           ),
         }}
       />
@@ -22,10 +22,10 @@ export default function RootLayout() {
         name="workouts"
         options={{
           title: "Workouts",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="weight-lifter"
-              size={28}
+              size={size}
               color={color}
             />
           ),
@@ -35,8 +35,8 @@ export default function RootLayout() {
         name="exercises"
         options={{
           title: "Exercises",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="barbell" size={24} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="barbell" size={size} color={color} />
           ),
         }}
       />
