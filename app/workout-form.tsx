@@ -71,6 +71,7 @@ export default function WorkoutForm() {
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
   } = useForm<WorkoutFormData>({
     resolver: zodResolver(workoutFormSchema),
     defaultValues: {
@@ -113,30 +114,27 @@ export default function WorkoutForm() {
   };
 
   const addSet = (exerciseIndex: number) => {
-    const currentExercises = exercises[exerciseIndex];
-    const updatedSets = [
-      ...currentExercises.sets,
-      { weight: "", reps: "", rpe: "" },
-    ];
-    setValue(`exercises.${exerciseIndex}.sets`, updatedSets as any);
+    const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
+    const newSet = { weight: "", reps: "", rpe: "" };
+    setValue(`exercises.${exerciseIndex}.sets`, [...currentSets, newSet]);
   };
 
-  const removeSet = (exerciseIndex: number, setIndex: number) => {
-    const currentExercises = exercises[exerciseIndex];
-    if (currentExercises.sets.length > 1) {
-      const updatedSets = currentExercises.sets.filter(
-        (_, index) => index !== setIndex
-      );
-      setValue(`exercises.${exerciseIndex}.sets`, updatedSets as any);
+  const handleRemoveSet = (exerciseIndex: number, setIndex: number) => {
+    const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
+    if (currentSets.length > 1) {
+      const updatedSets = currentSets.filter((_, index) => index !== setIndex);
+      setValue(`exercises.${exerciseIndex}.sets`, updatedSets);
     }
   };
 
   const cloneLastSet = (exerciseIndex: number) => {
-    const currentExercises = exercises[exerciseIndex];
-    if (currentExercises.sets.length > 0) {
-      const lastSet = currentExercises.sets[currentExercises.sets.length - 1];
-      const updatedSets = [...currentExercises.sets, { ...lastSet }];
-      setValue(`exercises.${exerciseIndex}.sets`, updatedSets as any);
+    const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
+    if (currentSets.length > 0) {
+      const lastSet = currentSets[currentSets.length - 1];
+      setValue(`exercises.${exerciseIndex}.sets`, [
+        ...currentSets,
+        { ...lastSet },
+      ]);
     }
   };
 
@@ -146,24 +144,28 @@ export default function WorkoutForm() {
   };
 
   const onSubmit = async (data: WorkoutFormData) => {
-    const workoutData: WorkoutData = {
-      name: data.name,
-      date: new Date(data.date),
-      exercises: data.exercises.map((exercise, index) => ({
-        id: index + 1,
-        name: exercise.name,
-        sets: exercise.sets.map((set, setIndex) => ({
-          id: setIndex + 1,
-          reps: set.reps,
-          weight: set.weight,
-          rpe: set.rpe,
+    try {
+      const workoutData: WorkoutData = {
+        name: data.name,
+        date: new Date(data.date),
+        exercises: data.exercises.map((exercise, index) => ({
+          id: index + 1,
+          name: exercise.name,
+          sets: exercise.sets.map((set, setIndex) => ({
+            id: setIndex + 1,
+            reps: set.reps,
+            weight: set.weight,
+            rpe: set.rpe,
+          })),
+          notes: exercise.notes,
         })),
-        notes: exercise.notes,
-      })),
-    };
+      };
 
-    await insertWorkout(drizzleDb, workoutData);
-    router.push("..");
+      await insertWorkout(drizzleDb, workoutData);
+      router.push("..");
+    } catch (error) {
+      console.error("Error saving workout:", error);
+    }
   };
 
   return (
@@ -221,151 +223,163 @@ export default function WorkoutForm() {
               Exercises
             </Text>
 
-            {exercises.map((exercise, exerciseIndex) => (
-              <View
-                key={exercise.id}
-                className="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-              >
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-lg font-medium text-gray-800 dark:text-white">
-                    Exercise {exerciseIndex + 1}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => handleRemoveExercise(exerciseIndex)}
-                    className="p-1"
-                  >
-                    <Trash2 size={20} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
+            {exercises.map((exercise, exerciseIndex) => {
+              const { fields: sets } = useFieldArray({
+                control,
+                name: `exercises.${exerciseIndex}.sets`,
+              });
 
-                {/* Exercise Name */}
-                <View className="mb-3">
-                  <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                    Exercise Name
-                  </Text>
-                  <Controller
-                    control={control}
-                    name={`exercises.${exerciseIndex}.name`}
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                        placeholder="e.g., Bench Press"
-                        placeholderTextColor="#9CA3AF"
-                        value={value}
-                        onChangeText={onChange}
-                      />
-                    )}
-                  />
-                </View>
-
-                {/* Sets Section */}
-                <View className="mb-3">
+              return (
+                <View
+                  key={exercise.id}
+                  className="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                >
                   <View className="flex-row justify-between items-center mb-2">
-                    <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Sets
+                    <Text className="text-lg font-medium text-gray-800 dark:text-white">
+                      Exercise {exerciseIndex + 1}
                     </Text>
+                    <TouchableOpacity
+                      onPress={() => handleRemoveExercise(exerciseIndex)}
+                      className="p-1"
+                    >
+                      <Trash2 size={20} color="#EF4444" />
+                    </TouchableOpacity>
                   </View>
 
-                  {exercise.sets.map((set, setIndex) => (
-                    <View key={setIndex} className="flex-row items-center mb-2">
-                      <Text className="w-10 text-gray-700 dark:text-gray-300 font-medium">
-                        #{setIndex + 1}
-                      </Text>
-                      <View className="flex-1 flex-row mr-2 gap-2">
-                        <Controller
-                          control={control}
-                          name={`exercises.${exerciseIndex}.sets.${setIndex}.reps`}
-                          render={({ field: { onChange, value } }) => (
-                            <SetField
-                              value={value}
-                              placeholder="Reps"
-                              onChange={onChange}
-                            />
-                          )}
+                  {/* Exercise Name */}
+                  <View className="mb-3">
+                    <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                      Exercise Name
+                    </Text>
+                    <Controller
+                      control={control}
+                      name={`exercises.${exerciseIndex}.name`}
+                      render={({ field: { onChange, value } }) => (
+                        <TextInput
+                          className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          placeholder="e.g., Bench Press"
+                          placeholderTextColor="#9CA3AF"
+                          value={value}
+                          onChangeText={onChange}
                         />
-                        <Controller
-                          control={control}
-                          name={`exercises.${exerciseIndex}.sets.${setIndex}.weight`}
-                          render={({ field: { onChange, value } }) => (
-                            <SetField
-                              value={value}
-                              placeholder="Weight"
-                              onChange={onChange}
-                            />
-                          )}
-                        />
-                        <Controller
-                          control={control}
-                          name={`exercises.${exerciseIndex}.sets.${setIndex}.rpe`}
-                          render={({ field: { onChange, value } }) => (
-                            <SetField
-                              value={value}
-                              placeholder="RPE"
-                              onChange={onChange}
-                            />
-                          )}
-                        />
-                      </View>
-                      <TouchableOpacity
-                        onPress={() => removeSet(exerciseIndex, setIndex)}
-                        className="p-2"
-                      >
-                        <Trash2 size={18} color="#EF4444" />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-                </View>
-
-                {/* Add Set and Clone Buttons */}
-                <View className="flex-row mb-3">
-                  <TouchableOpacity
-                    onPress={() => addSet(exerciseIndex)}
-                    className="flex-1 flex-row items-center justify-center p-2 mr-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
-                  >
-                    <Plus
-                      size={16}
-                      color={Platform.OS === "ios" ? "#007AFF" : "#2196F3"}
+                      )}
                     />
-                    <Text className="ml-2 text-gray-800 dark:text-white font-medium">
-                      Add Set
-                    </Text>
-                  </TouchableOpacity>
+                  </View>
 
-                  <TouchableOpacity
-                    onPress={() => cloneLastSet(exerciseIndex)}
-                    className="flex-1 flex-row items-center justify-center p-2 ml-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
-                    disabled={exercise.sets.length === 0}
-                  >
-                    <Text className="text-gray-800 dark:text-white font-medium">
-                      Clone Last Set
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                  {/* Sets Section */}
+                  <View className="mb-3">
+                    <View className="flex-row justify-between items-center mb-2">
+                      <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Sets
+                      </Text>
+                    </View>
 
-                {/* Notes */}
-                <View>
-                  <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                    Notes
-                  </Text>
-                  <Controller
-                    control={control}
-                    name={`exercises.${exerciseIndex}.notes`}
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                        placeholder="Any additional notes..."
-                        placeholderTextColor="#9CA3AF"
-                        multiline={true}
-                        numberOfLines={3}
-                        textAlignVertical="top"
-                        value={value}
-                        onChangeText={onChange}
+                    {sets.map((set, setIndex) => (
+                      <View
+                        key={setIndex}
+                        className="flex-row items-center mb-2"
+                      >
+                        <Text className="w-10 text-gray-700 dark:text-gray-300 font-medium">
+                          #{setIndex + 1}
+                        </Text>
+                        <View className="flex-1 flex-row mr-2 gap-2">
+                          <Controller
+                            control={control}
+                            name={`exercises.${exerciseIndex}.sets.${setIndex}.reps`}
+                            render={({ field: { onChange, value } }) => (
+                              <SetField
+                                value={value}
+                                placeholder="Reps"
+                                onChange={onChange}
+                              />
+                            )}
+                          />
+                          <Controller
+                            control={control}
+                            name={`exercises.${exerciseIndex}.sets.${setIndex}.weight`}
+                            render={({ field: { onChange, value } }) => (
+                              <SetField
+                                value={value}
+                                placeholder="Weight"
+                                onChange={onChange}
+                              />
+                            )}
+                          />
+                          <Controller
+                            control={control}
+                            name={`exercises.${exerciseIndex}.sets.${setIndex}.rpe`}
+                            render={({ field: { onChange, value } }) => (
+                              <SetField
+                                value={value}
+                                placeholder="RPE"
+                                onChange={onChange}
+                              />
+                            )}
+                          />
+                        </View>
+                        <TouchableOpacity
+                          onPress={() =>
+                            handleRemoveSet(exerciseIndex, setIndex)
+                          }
+                          className="p-2"
+                        >
+                          <Trash2 size={18} color="#EF4444" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+
+                  {/* Add Set and Clone Buttons */}
+                  <View className="flex-row mb-3">
+                    <TouchableOpacity
+                      onPress={() => addSet(exerciseIndex)}
+                      className="flex-1 flex-row items-center justify-center p-2 mr-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                    >
+                      <Plus
+                        size={16}
+                        color={Platform.OS === "ios" ? "#007AFF" : "#2196F3"}
                       />
-                    )}
-                  />
+                      <Text className="ml-2 text-gray-800 dark:text-white font-medium">
+                        Add Set
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => cloneLastSet(exerciseIndex)}
+                      className="flex-1 flex-row items-center justify-center p-2 ml-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                      disabled={sets.length === 0}
+                    >
+                      <Text className="text-gray-800 dark:text-white font-medium">
+                        Clone Last Set
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Notes */}
+                  <View>
+                    <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                      Notes
+                    </Text>
+                    <Controller
+                      control={control}
+                      name={`exercises.${exerciseIndex}.notes`}
+                      render={({ field: { onChange, value } }) => (
+                        <TextInput
+                          className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          placeholder="Any additional notes..."
+                          placeholderTextColor="#9CA3AF"
+                          multiline={true}
+                          numberOfLines={3}
+                          textAlignVertical="top"
+                          value={value}
+                          onChangeText={onChange}
+                        />
+                      )}
+                    />
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
 
             {/* Add Exercise Button */}
             <TouchableOpacity
