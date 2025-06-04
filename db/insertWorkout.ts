@@ -1,6 +1,6 @@
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { exercise, set, workout } from "./schema";
-import { WorkoutData } from "~/app/(workouts)/workout-form";
+import { WorkoutData } from "~/app/workout-form";
 
 export const insertWorkout = async (
   db: ExpoSQLiteDatabase,

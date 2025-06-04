@@ -68,6 +68,13 @@ export default function RootLayout() {
               ),
             }}
           />
+          <Tabs.Screen
+            name="workout-form"
+            options={{
+              title: "New Workout",
+              href: null,
+            }}
+          />
         </Tabs>
       </GestureHandlerRootView>
     </SQLiteProvider>

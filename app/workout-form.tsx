@@ -176,6 +176,10 @@ export default function WorkoutForm() {
       exercises: exercises,
     };
 
+    // TODO: Next step is probably implementing sync with turso
+    // Or updating this form to use react-hook-form
+
+    // Or actually implement exercises page
     await insertWorkout(drizzleDb, workoutData);
 
     // Close modal
