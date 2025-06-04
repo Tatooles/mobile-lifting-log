@@ -195,7 +195,7 @@ export default function WorkoutForm() {
         <View className="p-4">
           {/* Workout Name */}
           <View className="mb-4">
-            <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <Text className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
               Workout Name
             </Text>
             <TextInput
@@ -209,7 +209,7 @@ export default function WorkoutForm() {
 
           {/* Workout Date */}
           <View className="mb-6">
-            <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <Text className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
               Date
             </Text>
             <DateTimePicker

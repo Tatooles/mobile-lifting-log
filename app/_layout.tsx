@@ -73,6 +73,7 @@ export default function RootLayout() {
             options={{
               title: "New Workout",
               href: null,
+              headerShown: true,
             }}
           />
         </Tabs>
