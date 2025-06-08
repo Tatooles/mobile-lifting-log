@@ -45,6 +45,18 @@ export const workoutFormSchema = z.object({
 
 type WorkoutFormData = z.infer<typeof workoutFormSchema>;
 
+const DEFAULT_FORM_VALUES: WorkoutFormData = {
+  name: "",
+  date: new Date().toISOString(),
+  exercises: [
+    {
+      name: "",
+      notes: "",
+      sets: [{ weight: "", reps: "", rpe: "" }],
+    },
+  ],
+};
+
 interface ExerciseSet {
   id: number;
   reps: string;
@@ -72,19 +84,11 @@ export default function WorkoutForm() {
     formState: { errors },
     setValue,
     getValues,
+    reset,
+    watch,
   } = useForm<WorkoutFormData>({
     resolver: zodResolver(workoutFormSchema),
-    defaultValues: {
-      name: "",
-      date: new Date().toISOString(),
-      exercises: [
-        {
-          name: "",
-          notes: "",
-          sets: [{ weight: "", reps: "", rpe: "" }],
-        },
-      ],
-    },
+    defaultValues: DEFAULT_FORM_VALUES,
   });
 
   const {
@@ -164,7 +168,7 @@ export default function WorkoutForm() {
 
       await insertWorkout(drizzleDb, workoutData);
       router.push("/(workouts)");
-      // TODO: Clear form after submission
+      reset(DEFAULT_FORM_VALUES);
     } catch (error) {
       console.error("Error saving workout:", error);
     }
@@ -226,10 +230,7 @@ export default function WorkoutForm() {
             </Text>
 
             {exercises.map((exercise, exerciseIndex) => {
-              const { fields: sets } = useFieldArray({
-                control,
-                name: `exercises.${exerciseIndex}.sets`,
-              });
+              const sets = watch(`exercises.${exerciseIndex}.sets`) || [];
 
               return (
                 <View
