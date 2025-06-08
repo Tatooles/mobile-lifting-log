@@ -115,8 +115,10 @@ export default function WorkoutForm() {
 
   const addSet = (exerciseIndex: number) => {
     const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
-    const newSet = { weight: "", reps: "", rpe: "" };
-    setValue(`exercises.${exerciseIndex}.sets`, [...currentSets, newSet]);
+    setValue(`exercises.${exerciseIndex}.sets`, [
+      ...currentSets,
+      { weight: "", reps: "", rpe: "" },
+    ]);
   };
 
   const handleRemoveSet = (exerciseIndex: number, setIndex: number) => {
@@ -130,10 +132,9 @@ export default function WorkoutForm() {
   const cloneLastSet = (exerciseIndex: number) => {
     const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
     if (currentSets.length > 0) {
-      const lastSet = currentSets[currentSets.length - 1];
       setValue(`exercises.${exerciseIndex}.sets`, [
         ...currentSets,
-        { ...lastSet },
+        { ...currentSets[currentSets.length - 1] },
       ]);
     }
   };
@@ -162,7 +163,8 @@ export default function WorkoutForm() {
       };
 
       await insertWorkout(drizzleDb, workoutData);
-      router.push("..");
+      router.push("/(workouts)");
+      // TODO: Clear form after submission
     } catch (error) {
       console.error("Error saving workout:", error);
     }
