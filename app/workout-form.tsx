@@ -15,47 +15,12 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { insertWorkout } from "~/db/insertWorkout";
 import { router } from "expo-router";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-export const workoutFormSchema = z.object({
-  date: z.string(),
-  name: z
-    .string()
-    .min(1, {
-      message: "Workout name must be at least 1 character",
-    })
-    .max(50, {
-      message: "Workout name may not exceed 50 characters",
-    }),
-  exercises: z
-    .object({
-      name: z.string(),
-      notes: z.string(),
-      sets: z
-        .object({
-          weight: z.string(),
-          reps: z.string(),
-          rpe: z.string(),
-        })
-        .array(),
-    })
-    .array(),
-});
-
-type WorkoutFormData = z.infer<typeof workoutFormSchema>;
-
-const DEFAULT_FORM_VALUES: WorkoutFormData = {
-  name: "",
-  date: new Date().toISOString(),
-  exercises: [
-    {
-      name: "",
-      notes: "",
-      sets: [{ weight: "", reps: "", rpe: "" }],
-    },
-  ],
-};
+import {
+  workoutSchema,
+  type WorkoutFormData,
+  DEFAULT_WORKOUT_VALUES,
+} from "~/lib/schemas/workout";
 
 interface ExerciseSet {
   id: number;
@@ -87,8 +52,8 @@ export default function WorkoutForm() {
     reset,
     watch,
   } = useForm<WorkoutFormData>({
-    resolver: zodResolver(workoutFormSchema),
-    defaultValues: DEFAULT_FORM_VALUES,
+    resolver: zodResolver(workoutSchema),
+    defaultValues: DEFAULT_WORKOUT_VALUES,
   });
 
   const {
@@ -168,7 +133,7 @@ export default function WorkoutForm() {
 
       await insertWorkout(drizzleDb, workoutData);
       router.push("/(workouts)");
-      reset(DEFAULT_FORM_VALUES);
+      reset(DEFAULT_WORKOUT_VALUES);
     } catch (error) {
       console.error("Error saving workout:", error);
     }
