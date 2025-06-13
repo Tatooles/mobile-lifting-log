@@ -56,8 +56,8 @@ export default function WorkoutForm() {
 
   const {
     fields: exercises,
-    append: appendExercise,
-    remove: removeExerciseField,
+    append,
+    remove,
   } = useFieldArray({
     control,
     name: "exercises",
@@ -67,17 +67,11 @@ export default function WorkoutForm() {
   const drizzleDb = drizzle(db);
 
   const addExercise = () => {
-    appendExercise({
+    append({
       name: "",
       notes: "",
       sets: [{ weight: "", reps: "", rpe: "" }],
     });
-  };
-
-  const deleteExercise = (index: number) => {
-    if (exercises.length > 1) {
-      removeExerciseField(index);
-    }
   };
 
   const addSet = (exerciseIndex: number) => {
@@ -90,20 +84,16 @@ export default function WorkoutForm() {
 
   const deleteSet = (exerciseIndex: number, setIndex: number) => {
     const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
-    if (currentSets.length > 1) {
-      const updatedSets = currentSets.filter((_, index) => index !== setIndex);
-      setValue(`exercises.${exerciseIndex}.sets`, updatedSets);
-    }
+    const updatedSets = currentSets.filter((_, index) => index !== setIndex);
+    setValue(`exercises.${exerciseIndex}.sets`, updatedSets);
   };
 
   const cloneLastSet = (exerciseIndex: number) => {
     const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
-    if (currentSets.length > 0) {
-      setValue(`exercises.${exerciseIndex}.sets`, [
-        ...currentSets,
-        { ...currentSets[currentSets.length - 1] },
-      ]);
-    }
+    setValue(`exercises.${exerciseIndex}.sets`, [
+      ...currentSets,
+      { ...currentSets[currentSets.length - 1] },
+    ]);
   };
 
   const onDateChange = (event: any, selectedDate?: Date): void => {
@@ -203,7 +193,7 @@ export default function WorkoutForm() {
                       Exercise {exerciseIndex + 1}
                     </Text>
                     <TouchableOpacity
-                      onPress={() => deleteExercise(exerciseIndex)}
+                      onPress={() => remove(exerciseIndex)}
                       className="p-1"
                     >
                       <Trash2 size={20} color="#EF4444" />
@@ -306,15 +296,16 @@ export default function WorkoutForm() {
                       </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                      onPress={() => cloneLastSet(exerciseIndex)}
-                      className="flex-1 flex-row items-center justify-center p-2 ml-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
-                      disabled={sets.length === 0}
-                    >
-                      <Text className="text-gray-800 dark:text-white font-medium">
-                        Clone Last Set
-                      </Text>
-                    </TouchableOpacity>
+                    {sets.length > 0 && (
+                      <TouchableOpacity
+                        onPress={() => cloneLastSet(exerciseIndex)}
+                        className="flex-1 flex-row items-center justify-center p-2 ml-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                      >
+                        <Text className="text-gray-800 dark:text-white font-medium">
+                          Clone Last Set
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
 
                   {/* Notes */}
