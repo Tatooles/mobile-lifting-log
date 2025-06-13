@@ -23,14 +23,12 @@ import {
 } from "~/lib/schemas/workout";
 
 interface ExerciseSet {
-  id: number;
   reps: string;
   weight: string;
   rpe: string;
 }
 
 interface Exercise {
-  id: number;
   name: string;
   sets: ExerciseSet[];
   notes: string;
@@ -76,7 +74,7 @@ export default function WorkoutForm() {
     });
   };
 
-  const handleRemoveExercise = (index: number) => {
+  const deleteExercise = (index: number) => {
     if (exercises.length > 1) {
       removeExerciseField(index);
     }
@@ -90,7 +88,7 @@ export default function WorkoutForm() {
     ]);
   };
 
-  const handleRemoveSet = (exerciseIndex: number, setIndex: number) => {
+  const deleteSet = (exerciseIndex: number, setIndex: number) => {
     const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
     if (currentSets.length > 1) {
       const updatedSets = currentSets.filter((_, index) => index !== setIndex);
@@ -118,11 +116,9 @@ export default function WorkoutForm() {
       const workoutData: WorkoutData = {
         name: data.name,
         date: new Date(data.date),
-        exercises: data.exercises.map((exercise, index) => ({
-          id: index + 1,
+        exercises: data.exercises.map((exercise) => ({
           name: exercise.name,
-          sets: exercise.sets.map((set, setIndex) => ({
-            id: setIndex + 1,
+          sets: exercise.sets.map((set) => ({
             reps: set.reps,
             weight: set.weight,
             rpe: set.rpe,
@@ -207,7 +203,7 @@ export default function WorkoutForm() {
                       Exercise {exerciseIndex + 1}
                     </Text>
                     <TouchableOpacity
-                      onPress={() => handleRemoveExercise(exerciseIndex)}
+                      onPress={() => deleteExercise(exerciseIndex)}
                       className="p-1"
                     >
                       <Trash2 size={20} color="#EF4444" />
@@ -286,9 +282,7 @@ export default function WorkoutForm() {
                           />
                         </View>
                         <TouchableOpacity
-                          onPress={() =>
-                            handleRemoveSet(exerciseIndex, setIndex)
-                          }
+                          onPress={() => deleteSet(exerciseIndex, setIndex)}
                           className="p-2"
                         >
                           <Trash2 size={18} color="#EF4444" />
