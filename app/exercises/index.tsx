@@ -31,12 +31,6 @@ export default function ExercisesScreen() {
           <Text style={styles.emptyText}>No exercises yet!</Text>
         }
       />
-      <Button
-        onPress={() => router.push("/exercises/modal")}
-        variant={"secondary"}
-      >
-        <Text>Open modal</Text>
-      </Button>
     </View>
   );
 }

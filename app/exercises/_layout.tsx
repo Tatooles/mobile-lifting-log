@@ -4,12 +4,6 @@ export default function Layout() {
   return (
     <Stack>
       <Stack.Screen name="index" />
-      <Stack.Screen
-        name="modal"
-        options={{
-          presentation: "modal",
-        }}
-      />
     </Stack>
   );
 }
