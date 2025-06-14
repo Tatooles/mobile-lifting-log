@@ -14,16 +14,21 @@ import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { insertWorkout } from "~/db/insertWorkout";
 import { router } from "expo-router";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  workoutSchema,
+  type WorkoutFormData,
+  DEFAULT_WORKOUT_VALUES,
+} from "~/lib/schemas/workout";
 
 interface ExerciseSet {
-  id: number;
   reps: string;
   weight: string;
   rpe: string;
 }
 
 interface Exercise {
-  id: number;
   name: string;
   sets: ExerciseSet[];
   notes: string;
@@ -36,154 +41,88 @@ export interface WorkoutData {
 }
 
 export default function WorkoutForm() {
-  const [workoutName, setWorkoutName] = useState<string>("");
-  const [workoutDate, setWorkoutDate] = useState<Date>(new Date());
-  const [exercises, setExercises] = useState<Exercise[]>([
-    {
-      id: 1,
-      name: "",
-      sets: [{ id: 1, reps: "", weight: "", rpe: "" }],
-      notes: "",
-    },
-  ]);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    getValues,
+    reset,
+    watch,
+  } = useForm<WorkoutFormData>({
+    resolver: zodResolver(workoutSchema),
+    defaultValues: DEFAULT_WORKOUT_VALUES,
+  });
+
+  const {
+    fields: exercises,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "exercises",
+  });
 
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db);
 
   const addExercise = () => {
-    const newId =
-      exercises.length > 0 ? Math.max(...exercises.map((ex) => ex.id)) + 1 : 1;
-    setExercises([
-      ...exercises,
-      {
-        id: newId,
-        name: "",
-        sets: [{ id: 1, reps: "", weight: "", rpe: "" }],
-        notes: "",
-      },
+    append({
+      name: "",
+      notes: "",
+      sets: [{ weight: "", reps: "", rpe: "" }],
+    });
+  };
+
+  const addSet = (exerciseIndex: number) => {
+    const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
+    setValue(`exercises.${exerciseIndex}.sets`, [
+      ...currentSets,
+      { weight: "", reps: "", rpe: "" },
     ]);
   };
 
-  const removeExercise = (id: number) => {
-    if (exercises.length > 1) {
-      setExercises(exercises.filter((exercise) => exercise.id !== id));
-    }
+  const deleteSet = (exerciseIndex: number, setIndex: number) => {
+    const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
+    const updatedSets = currentSets.filter((_, index) => index !== setIndex);
+    setValue(`exercises.${exerciseIndex}.sets`, updatedSets);
   };
 
-  const updateExercise = (
-    exerciseId: number,
-    field: string,
-    value: string | ExerciseSet[]
-  ): void => {
-    setExercises(
-      exercises.map((exercise) =>
-        exercise.id === exerciseId
-          ? field === "sets"
-            ? { ...exercise, sets: value as ExerciseSet[] }
-            : { ...exercise, [field]: value }
-          : exercise
-      )
-    );
-  };
-
-  const addSet = (exerciseId: number): void => {
-    setExercises(
-      exercises.map((exercise) => {
-        if (exercise.id === exerciseId) {
-          const newSetId =
-            exercise.sets.length > 0
-              ? Math.max(...exercise.sets.map((set) => set.id)) + 1
-              : 1;
-          return {
-            ...exercise,
-            sets: [
-              ...exercise.sets,
-              { id: newSetId, reps: "", weight: "", rpe: "" },
-            ],
-          };
-        }
-        return exercise;
-      })
-    );
-  };
-
-  const removeSet = (exerciseId: number, setId: number): void => {
-    setExercises(
-      exercises.map((exercise) => {
-        if (exercise.id === exerciseId) {
-          // Don't remove if it's the last set
-          if (exercise.sets.length <= 1) {
-            return exercise;
-          }
-          return {
-            ...exercise,
-            sets: exercise.sets.filter((set) => set.id !== setId),
-          };
-        }
-        return exercise;
-      })
-    );
-  };
-
-  const cloneLastSet = (exerciseId: number) => {
-    setExercises(
-      exercises.map((exercise) => {
-        if (exercise.id === exerciseId && exercise.sets.length > 0) {
-          const lastSet = { ...exercise.sets[exercise.sets.length - 1] };
-          lastSet.id++;
-
-          return {
-            ...exercise,
-            sets: [...exercise.sets, lastSet],
-          };
-        }
-        return exercise;
-      })
-    );
-  };
-
-  const updateSet = (
-    exerciseId: number,
-    setId: number,
-    field: keyof ExerciseSet,
-    value: string
-  ): void => {
-    setExercises(
-      exercises.map((exercise) => {
-        if (exercise.id === exerciseId) {
-          return {
-            ...exercise,
-            sets: exercise.sets.map((set) =>
-              set.id === setId ? { ...set, [field]: value } : set
-            ),
-          };
-        }
-        return exercise;
-      })
-    );
+  const cloneLastSet = (exerciseIndex: number) => {
+    const currentSets = getValues(`exercises.${exerciseIndex}.sets`) || [];
+    setValue(`exercises.${exerciseIndex}.sets`, [
+      ...currentSets,
+      { ...currentSets[currentSets.length - 1] },
+    ]);
   };
 
   const onDateChange = (event: any, selectedDate?: Date): void => {
-    // TODO: This will need to be formatted properly
-    const currentDate = selectedDate || workoutDate;
-    setWorkoutDate(currentDate);
+    const currentDate = selectedDate || new Date();
+    setValue("date", currentDate.toISOString());
   };
 
-  const handleSubmit = async () => {
-    const workoutData: WorkoutData = {
-      name: workoutName,
-      date: workoutDate,
-      exercises: exercises,
-    };
+  const onSubmit = async (data: WorkoutFormData) => {
+    try {
+      const workoutData: WorkoutData = {
+        name: data.name,
+        date: new Date(data.date),
+        exercises: data.exercises.map((exercise) => ({
+          name: exercise.name,
+          sets: exercise.sets.map((set) => ({
+            reps: set.reps,
+            weight: set.weight,
+            rpe: set.rpe,
+          })),
+          notes: exercise.notes,
+        })),
+      };
 
-    // TODO: Next step is probably implementing sync with turso
-    // Or updating this form to use react-hook-form
-
-    // Or actually implement exercises page
-    await insertWorkout(drizzleDb, workoutData);
-
-    // Close modal
-    router.push("..");
+      await insertWorkout(drizzleDb, workoutData);
+      router.push("/(workouts)");
+      reset(DEFAULT_WORKOUT_VALUES);
+    } catch (error) {
+      console.error("Error saving workout:", error);
+    }
   };
 
   return (
@@ -198,13 +137,22 @@ export default function WorkoutForm() {
             <Text className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
               Workout Name
             </Text>
-            <TextInput
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder="Enter workout name"
-              placeholderTextColor="#9CA3AF"
-              value={workoutName}
-              onChangeText={setWorkoutName}
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  placeholder="Enter workout name"
+                  placeholderTextColor="#9CA3AF"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
             />
+            {errors.name && (
+              <Text className="text-red-500 mt-1">{errors.name.message}</Text>
+            )}
           </View>
 
           {/* Workout Date */}
@@ -212,11 +160,17 @@ export default function WorkoutForm() {
             <Text className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
               Date
             </Text>
-            <DateTimePicker
-              value={workoutDate}
-              mode="date"
-              display="default"
-              onChange={onDateChange}
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { value } }) => (
+                <DateTimePicker
+                  value={new Date(value)}
+                  mode="date"
+                  display="default"
+                  onChange={onDateChange}
+                />
+              )}
             />
           </View>
 
@@ -226,134 +180,159 @@ export default function WorkoutForm() {
               Exercises
             </Text>
 
-            {exercises.map((exercise, index) => (
-              <View
-                key={exercise.id}
-                className="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-              >
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-lg font-medium text-gray-800 dark:text-white">
-                    Exercise {index + 1}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => removeExercise(exercise.id)}
-                    className="p-1"
-                  >
-                    <Trash2 size={20} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
+            {exercises.map((exercise, exerciseIndex) => {
+              const sets = watch(`exercises.${exerciseIndex}.sets`) || [];
 
-                {/* Exercise Name */}
-                <View className="mb-3">
-                  <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                    Exercise Name
-                  </Text>
-                  <TextInput
-                    className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    placeholder="e.g., Bench Press"
-                    placeholderTextColor="#9CA3AF"
-                    value={exercise.name}
-                    onChangeText={(text) =>
-                      updateExercise(exercise.id, "name", text)
-                    }
-                  />
-                </View>
-
-                {/* Sets Section */}
-                <View className="mb-3">
+              return (
+                <View
+                  key={exercise.id}
+                  className="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                >
                   <View className="flex-row justify-between items-center mb-2">
-                    <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Sets
+                    <Text className="text-lg font-medium text-gray-800 dark:text-white">
+                      Exercise {exerciseIndex + 1}
                     </Text>
+                    <TouchableOpacity
+                      onPress={() => remove(exerciseIndex)}
+                      className="p-1"
+                    >
+                      <Trash2 size={20} color="#EF4444" />
+                    </TouchableOpacity>
                   </View>
 
-                  {exercise.sets.map((set, setIndex) => (
-                    <View key={set.id} className="flex-row items-center mb-2">
-                      <Text className="w-10 text-gray-700 dark:text-gray-300 font-medium">
-                        #{setIndex + 1}
-                      </Text>
-                      <View className="flex-1 flex-row mr-2 gap-2">
-                        <SetField
-                          value={set.reps}
-                          exerciseId={exercise.id}
-                          setId={set.id}
-                          field="reps"
-                          placeholder="Reps"
-                          updateFunction={updateSet}
+                  {/* Exercise Name */}
+                  <View className="mb-3">
+                    <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                      Exercise Name
+                    </Text>
+                    <Controller
+                      control={control}
+                      name={`exercises.${exerciseIndex}.name`}
+                      render={({ field: { onChange, value } }) => (
+                        <TextInput
+                          className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          placeholder="e.g., Bench Press"
+                          placeholderTextColor="#9CA3AF"
+                          value={value}
+                          onChangeText={onChange}
                         />
-                        <SetField
-                          value={set.weight}
-                          exerciseId={exercise.id}
-                          setId={set.id}
-                          field="weight"
-                          placeholder="Weight"
-                          updateFunction={updateSet}
-                        />
-                        <SetField
-                          value={set.rpe}
-                          exerciseId={exercise.id}
-                          setId={set.id}
-                          field="rpe"
-                          placeholder="RPE"
-                          updateFunction={updateSet}
-                        />
-                      </View>
-                      <TouchableOpacity
-                        onPress={() => removeSet(exercise.id, set.id)}
-                        className="p-2"
-                      >
-                        <Trash2 size={18} color="#EF4444" />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-                </View>
-
-                {/* Add Set and Clone Buttons */}
-                <View className="flex-row mb-3">
-                  <TouchableOpacity
-                    onPress={() => addSet(exercise.id)}
-                    className="flex-1 flex-row items-center justify-center p-2 mr-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
-                  >
-                    <Plus
-                      size={16}
-                      color={Platform.OS === "ios" ? "#007AFF" : "#2196F3"}
+                      )}
                     />
-                    <Text className="ml-2 text-gray-800 dark:text-white font-medium">
-                      Add Set
-                    </Text>
-                  </TouchableOpacity>
+                  </View>
 
-                  <TouchableOpacity
-                    onPress={() => cloneLastSet(exercise.id)}
-                    className="flex-1 flex-row items-center justify-center p-2 ml-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
-                    disabled={exercise.sets.length === 0}
-                  >
-                    <Text className="text-gray-800 dark:text-white font-medium">
-                      Clone Last Set
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                  {/* Sets Section */}
+                  <View className="mb-3">
+                    <View className="flex-row justify-between items-center mb-2">
+                      <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Sets
+                      </Text>
+                    </View>
 
-                {/* Notes */}
-                <View>
-                  <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                    Notes
-                  </Text>
-                  <TextInput
-                    className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                    placeholder="Any additional notes..."
-                    placeholderTextColor="#9CA3AF"
-                    multiline={true}
-                    numberOfLines={3}
-                    textAlignVertical="top"
-                    value={exercise.notes}
-                    onChangeText={(text) =>
-                      updateExercise(exercise.id, "notes", text)
-                    }
-                  />
+                    {sets.map((set, setIndex) => (
+                      <View
+                        key={setIndex}
+                        className="flex-row items-center mb-2"
+                      >
+                        <Text className="w-10 text-gray-700 dark:text-gray-300 font-medium">
+                          #{setIndex + 1}
+                        </Text>
+                        <View className="flex-1 flex-row mr-2 gap-2">
+                          <Controller
+                            control={control}
+                            name={`exercises.${exerciseIndex}.sets.${setIndex}.reps`}
+                            render={({ field: { onChange, value } }) => (
+                              <SetField
+                                value={value}
+                                placeholder="Reps"
+                                onChange={onChange}
+                              />
+                            )}
+                          />
+                          <Controller
+                            control={control}
+                            name={`exercises.${exerciseIndex}.sets.${setIndex}.weight`}
+                            render={({ field: { onChange, value } }) => (
+                              <SetField
+                                value={value}
+                                placeholder="Weight"
+                                onChange={onChange}
+                              />
+                            )}
+                          />
+                          <Controller
+                            control={control}
+                            name={`exercises.${exerciseIndex}.sets.${setIndex}.rpe`}
+                            render={({ field: { onChange, value } }) => (
+                              <SetField
+                                value={value}
+                                placeholder="RPE"
+                                onChange={onChange}
+                              />
+                            )}
+                          />
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => deleteSet(exerciseIndex, setIndex)}
+                          className="p-2"
+                        >
+                          <Trash2 size={18} color="#EF4444" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+
+                  {/* Add Set and Clone Buttons */}
+                  <View className="flex-row mb-3">
+                    <TouchableOpacity
+                      onPress={() => addSet(exerciseIndex)}
+                      className="flex-1 flex-row items-center justify-center p-2 mr-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                    >
+                      <Plus
+                        size={16}
+                        color={Platform.OS === "ios" ? "#007AFF" : "#2196F3"}
+                      />
+                      <Text className="ml-2 text-gray-800 dark:text-white font-medium">
+                        Add Set
+                      </Text>
+                    </TouchableOpacity>
+
+                    {sets.length > 0 && (
+                      <TouchableOpacity
+                        onPress={() => cloneLastSet(exerciseIndex)}
+                        className="flex-1 flex-row items-center justify-center p-2 ml-1 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                      >
+                        <Text className="text-gray-800 dark:text-white font-medium">
+                          Clone Last Set
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* Notes */}
+                  <View>
+                    <Text className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                      Notes
+                    </Text>
+                    <Controller
+                      control={control}
+                      name={`exercises.${exerciseIndex}.notes`}
+                      render={({ field: { onChange, value } }) => (
+                        <TextInput
+                          className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          placeholder="Any additional notes..."
+                          placeholderTextColor="#9CA3AF"
+                          multiline={true}
+                          numberOfLines={3}
+                          textAlignVertical="top"
+                          value={value}
+                          onChangeText={onChange}
+                        />
+                      )}
+                    />
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
 
             {/* Add Exercise Button */}
             <TouchableOpacity
@@ -367,7 +346,7 @@ export default function WorkoutForm() {
 
           {/* Submit Button */}
           <TouchableOpacity
-            onPress={handleSubmit}
+            onPress={handleSubmit(onSubmit)}
             className="w-full p-4 bg-green-600 rounded-lg mt-4"
           >
             <Text className="text-white font-bold text-center text-lg">
@@ -382,23 +361,12 @@ export default function WorkoutForm() {
 
 const SetField = ({
   value,
-  exerciseId,
-  setId,
-  field,
   placeholder,
-  updateFunction,
+  onChange,
 }: {
-  value: any;
-  exerciseId: number;
-  setId: number;
-  field: keyof ExerciseSet;
+  value: string;
   placeholder: string;
-  updateFunction: (
-    exerciseId: number,
-    setId: number,
-    field: keyof ExerciseSet,
-    value: string
-  ) => void;
+  onChange: (text: string) => void;
 }) => {
   return (
     <View className="flex-1">
@@ -408,7 +376,7 @@ const SetField = ({
         placeholderTextColor="#9CA3AF"
         keyboardType="numeric"
         value={value}
-        onChangeText={(text) => updateFunction(exerciseId, setId, field, text)}
+        onChangeText={onChange}
       />
     </View>
   );
