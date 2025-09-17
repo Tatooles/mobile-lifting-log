@@ -8,7 +8,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import WorkoutItem from "./workout-item";
+import WorkoutBox from "./workout-item";
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -55,7 +55,7 @@ export default function WorkoutsScreen() {
       <FlatList
         data={workouts}
         ListHeaderComponent={renderHeader}
-        renderItem={({ item }) => <WorkoutItem workout={item} />}
+        renderItem={({ item }) => <WorkoutBox workout={item} />}
         keyExtractor={(item) => item.id.toString()}
         className="p-4"
       />

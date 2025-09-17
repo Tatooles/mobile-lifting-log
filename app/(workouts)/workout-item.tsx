@@ -52,7 +52,7 @@ const WorkoutBox = ({ workout }: { workout: Workout }) => {
   return (
     <View className="mb-3">
       <Swipeable
-        renderRightActions={(progress, dragX) =>
+        renderRightActions={(progress: any, dragX: any) =>
           renderRightActions(progress, dragX, workout)
         }
         rightThreshold={40}
