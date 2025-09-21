@@ -75,5 +75,8 @@
     "react-test-renderer": "19.0.0",
     "typescript": "~5.9.2"
   },
+  "overrides": {
+    "expo-sqlite": "~16.0.8"
+  },
   "private": true
 }
