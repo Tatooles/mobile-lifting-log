@@ -22,11 +22,11 @@ const db = drizzle(expo);
 export default function RootLayout() {
   const { success, error } = useMigrations(db, migrations);
 
-  useEffect(() => {
-    if (success) {
-      addDummyData(db);
-    }
-  }, [success]);
+  // useEffect(() => {
+  //   if (success) {
+  //     addDummyData(db);
+  //   }
+  // }, [success]);
 
   return (
     <SQLiteProvider
