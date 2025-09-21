@@ -6,28 +6,11 @@ import {
 } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { openDatabaseSync, SQLiteProvider } from "expo-sqlite";
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import migrations from "@/drizzle/migrations";
-import { addDummyData } from "~/db/addDummyData";
-import { useEffect } from "react";
+import { SQLiteProvider } from "expo-sqlite";
 
 export const DATABASE_NAME = "db.db";
 
-const expo = openDatabaseSync(DATABASE_NAME);
-
-const db = drizzle(expo);
-
 export default function RootLayout() {
-  const { success, error } = useMigrations(db, migrations);
-
-  // useEffect(() => {
-  //   if (success) {
-  //     addDummyData(db);
-  //   }
-  // }, [success]);
-
   return (
     <SQLiteProvider
       databaseName={DATABASE_NAME}

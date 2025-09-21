@@ -13,7 +13,7 @@ export const deleteWorkout = async (
 
     await db.delete(workout).where(eq(workout.id, workoutId));
   } catch (error) {
-    console.log("An error ocurred!");
+    console.log(`An error ocurred while deleting workout ${workoutId}!`);
     if (error instanceof Error) console.log(error.message);
   }
 };
