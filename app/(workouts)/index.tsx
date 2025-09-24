@@ -8,7 +8,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import WorkoutBox from "./workout-item";
+import WorkoutItem from "./workout-item";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function WorkoutsScreen() {
@@ -56,7 +56,7 @@ export default function WorkoutsScreen() {
       <FlatList
         data={workouts}
         ListHeaderComponent={renderHeader}
-        renderItem={({ item }) => <WorkoutBox workout={item} />}
+        renderItem={({ item }) => <WorkoutItem workout={item} />}
         keyExtractor={(item) => item.id.toString()}
         className="p-4"
       />

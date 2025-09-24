@@ -8,7 +8,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { deleteWorkout } from "~/db/deleteWorkout";
 
-const WorkoutBox = ({ workout }: { workout: Workout }) => {
+const WorkoutItem = ({ workout }: { workout: Workout }) => {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db);
 
@@ -77,4 +77,4 @@ const WorkoutBox = ({ workout }: { workout: Workout }) => {
   );
 };
 
-export default WorkoutBox;
+export default WorkoutItem;
