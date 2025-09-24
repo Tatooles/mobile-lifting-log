@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { FlatList, Pressable, SafeAreaView } from "react-native";
+import { FlatList, Pressable } from "react-native";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { Exercises } from "@/types/types";
 import { Dumbbell } from "lucide-react-native";
 import { iconWithClassName } from "~/lib/icons/iconWithClassName";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 iconWithClassName(Dumbbell);
 
@@ -34,7 +35,7 @@ export default function ExercisesScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-200">
+    <SafeAreaProvider className="flex-1 bg-gray-200">
       <Text className="text-3xl font-bold text-gray-800 mb-4 mt-6 px-4">
         Exercises
       </Text>
@@ -49,6 +50,6 @@ export default function ExercisesScreen() {
           </Text>
         }
       />
-    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

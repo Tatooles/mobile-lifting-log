@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, SafeAreaView, StatusBar, Pressable } from "react-native";
+import { View, Text, StatusBar, Pressable } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -9,6 +9,7 @@ import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import WorkoutItem from "./workout-item";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -51,7 +52,7 @@ export default function WorkoutsScreen() {
   );
 
   return (
-    <SafeAreaView className="bg-gray-200">
+    <SafeAreaProvider className="bg-gray-200">
       <FlatList
         data={workouts}
         ListHeaderComponent={renderHeader}
@@ -59,6 +60,6 @@ export default function WorkoutsScreen() {
         keyExtractor={(item) => item.id.toString()}
         className="p-4"
       />
-    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

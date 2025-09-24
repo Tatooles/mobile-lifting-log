@@ -6,6 +6,7 @@ export const insertWorkout = async (
   db: ExpoSQLiteDatabase,
   workoutData: WorkoutData
 ) => {
+  // TODO: The tables will not be initialized for new users.
   try {
     await db.transaction(async () => {
       const workoutResult = await db.insert(workout).values({
@@ -32,7 +33,7 @@ export const insertWorkout = async (
       }
     });
   } catch (error) {
-    console.log("An error ocurred!");
+    console.log(`An error ocurred while inserting workout!`);
     if (error instanceof Error) console.log(error.message);
   }
 };
