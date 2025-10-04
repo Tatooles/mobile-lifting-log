@@ -1,9 +1,10 @@
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { exercise, set, workout } from "./schema";
 import { WorkoutData } from "~/app/workout-form";
+import * as schema from "@/db/schema";
 
 export const insertWorkout = async (
-  db: ExpoSQLiteDatabase,
+  db: ExpoSQLiteDatabase<typeof schema>,
   workoutData: WorkoutData
 ) => {
   // TODO: The tables will not be initialized for new users.

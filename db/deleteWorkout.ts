@@ -2,9 +2,10 @@ import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { workout } from "./schema";
 import { eq } from "drizzle-orm";
 import { sql } from "drizzle-orm";
+import * as schema from "@/db/schema";
 
 export const deleteWorkout = async (
-  db: ExpoSQLiteDatabase,
+  db: ExpoSQLiteDatabase<typeof schema>,
   workoutId: number
 ) => {
   try {
