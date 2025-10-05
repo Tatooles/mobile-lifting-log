@@ -35,22 +35,18 @@ export default function RootLayout() {
               <Label>Home</Label>
               <Icon sf={{ default: "house", selected: "house.fill" }} />
             </NativeTabs.Trigger>
+            <NativeTabs.Trigger name="workout-form">
+              <Label>Workout</Label>
+              <Icon sf={{ default: "plus", selected: "plus.circle.fill" }} />
+            </NativeTabs.Trigger>
             <NativeTabs.Trigger name="(workouts)">
-              <Label>Workouts</Label>
+              <Label>History</Label>
               <Icon
                 sf={{
                   default: "figure.strengthtraining.traditional.circle",
                   selected: "figure.strengthtraining.traditional.circle.fill",
                 }}
               />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="exercises">
-              <Label>Exercises</Label>
-              <Icon sf={{ default: "dumbbell", selected: "dumbbell.fill" }} />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="workout-form">
-              <Label>New Workout</Label>
-              <Icon sf={{ default: "plus", selected: "plus.circle.fill" }} />
             </NativeTabs.Trigger>
           </NativeTabs>
         </GestureHandlerRootView>
