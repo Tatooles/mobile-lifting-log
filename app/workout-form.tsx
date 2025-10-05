@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   View,
   Text,
@@ -21,6 +20,7 @@ import {
   type WorkoutFormData,
   DEFAULT_WORKOUT_VALUES,
 } from "~/lib/schemas/workout";
+import * as schema from "@/db/schema";
 
 interface ExerciseSet {
   reps: string;
@@ -64,7 +64,7 @@ export default function WorkoutForm() {
   });
 
   const db = useSQLiteContext();
-  const drizzleDb = drizzle(db);
+  const drizzleDb = drizzle(db, { schema });
 
   const addExercise = () => {
     append({

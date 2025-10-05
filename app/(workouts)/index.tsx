@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, StatusBar, Pressable } from "react-native";
+import { Text, Pressable } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { router } from "expo-router";
 import { useEffect } from "react";

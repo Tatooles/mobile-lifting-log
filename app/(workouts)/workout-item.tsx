@@ -7,10 +7,11 @@ import { Workout } from "~/lib/types";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { deleteWorkout } from "~/db/deleteWorkout";
+import * as schema from "@/db/schema";
 
 const WorkoutItem = ({ workout }: { workout: Workout }) => {
   const db = useSQLiteContext();
-  const drizzleDb = drizzle(db);
+  const drizzleDb = drizzle(db, { schema });
 
   const handleDeleteWorkout = (id: number) => {
     Alert.alert(
