@@ -1,10 +1,4 @@
 import "../global.css";
-import {
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-import { Tabs } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { openDatabaseSync, SQLiteProvider } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
@@ -12,6 +6,7 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import { Suspense, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
+import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 
 export const DATABASE_NAME = "db.db";
 
@@ -35,52 +30,29 @@ export default function RootLayout() {
         useSuspense
       >
         <GestureHandlerRootView>
-          <Tabs
-            screenOptions={{
-              headerShown: false,
-              tabBarActiveTintColor: "teal",
-            }}
-          >
-            <Tabs.Screen
-              name="home"
-              options={{
-                title: "Home",
-                tabBarIcon: ({ color, size }) => (
-                  <FontAwesome size={size} name="home" color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="(workouts)"
-              options={{
-                title: "Workouts",
-                tabBarIcon: ({ color, size }) => (
-                  <MaterialCommunityIcons
-                    name="weight-lifter"
-                    size={size}
-                    color={color}
-                  />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="exercises"
-              options={{
-                title: "Exercises",
-                tabBarIcon: ({ color, size }) => (
-                  <Ionicons name="barbell" size={size} color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="workout-form"
-              options={{
-                title: "New Workout",
-                href: null,
-                headerShown: true,
-              }}
-            />
-          </Tabs>
+          <NativeTabs>
+            <NativeTabs.Trigger name="home">
+              <Label>Home</Label>
+              <Icon sf={{ default: "house", selected: "house.fill" }} />
+            </NativeTabs.Trigger>
+            <NativeTabs.Trigger name="(workouts)">
+              <Label>Workouts</Label>
+              <Icon
+                sf={{
+                  default: "figure.strengthtraining.traditional.circle",
+                  selected: "figure.strengthtraining.traditional.circle.fill",
+                }}
+              />
+            </NativeTabs.Trigger>
+            <NativeTabs.Trigger name="exercises">
+              <Label>Exercises</Label>
+              <Icon sf={{ default: "dumbbell", selected: "dumbbell.fill" }} />
+            </NativeTabs.Trigger>
+            <NativeTabs.Trigger name="workout-form">
+              <Label>New Workout</Label>
+              <Icon sf={{ default: "plus", selected: "plus.circle.fill" }} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
         </GestureHandlerRootView>
       </SQLiteProvider>
     </Suspense>
