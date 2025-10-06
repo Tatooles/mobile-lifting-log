@@ -52,13 +52,13 @@ export default function WorkoutsScreen() {
   );
 
   return (
-    <SafeAreaProvider className="bg-gray-200">
+    <SafeAreaProvider>
       <FlatList
         data={workouts}
         ListHeaderComponent={renderHeader}
         renderItem={({ item }) => <WorkoutItem workout={item} />}
         keyExtractor={(item) => item.id.toString()}
-        className="p-4"
+        className="bg-gray-50 dark:bg-gray-900 p-4"
       />
     </SafeAreaProvider>
   );
