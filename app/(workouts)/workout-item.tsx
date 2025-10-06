@@ -60,14 +60,14 @@ const WorkoutItem = ({ workout }: { workout: Workout }) => {
         overshootRight={false}
       >
         <Link href={`/details/${workout.id}`} asChild>
-          <Pressable className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 p-4">
-            <Text className="text-lg font-bold mb-1 text-gray-800">
+          <Pressable className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-md p-4">
+            <Text className="text-lg font-bold mb-1 text-gray-800 dark:text-white">
               {workout.name}
             </Text>
-            <Text className="text-sm text-gray-600 mb-1">
+            <Text className="text-sm mb-1 text-gray-600 dark:text-gray-300">
               {formatDate(workout.date)}
             </Text>
-            <Text className="text-sm text-gray-500">
+            <Text className="text-sm text-gray-500 dark:text-gray-400">
               {workout.exercises.length}{" "}
               {workout.exercises.length === 1 ? "exercise" : "exercises"}
             </Text>
