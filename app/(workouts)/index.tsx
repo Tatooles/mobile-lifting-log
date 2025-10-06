@@ -44,7 +44,7 @@ export default function WorkoutsScreen() {
 
   const renderHeader = () => (
     <Pressable
-      className="bg-blue-500 p-4 rounded-lg mb-4 items-center"
+      className="bg-green-500 dark:bg-green-600 p-4 rounded-lg mb-4 items-center"
       onPress={() => router.push("/workout-form")}
     >
       <Text className="text-white font-bold text-base">Add Workout</Text>
@@ -52,13 +52,13 @@ export default function WorkoutsScreen() {
   );
 
   return (
-    <SafeAreaProvider className="bg-gray-200">
+    <SafeAreaProvider>
       <FlatList
         data={workouts}
         ListHeaderComponent={renderHeader}
         renderItem={({ item }) => <WorkoutItem workout={item} />}
         keyExtractor={(item) => item.id.toString()}
-        className="p-4"
+        className="bg-gray-50 dark:bg-gray-900 p-4"
       />
     </SafeAreaProvider>
   );

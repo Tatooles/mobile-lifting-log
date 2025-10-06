@@ -1,11 +1,14 @@
 import { Stack } from "expo-router";
+import { useColorScheme } from "~/lib/useColorScheme";
 
 export default function HomeLayout() {
+  const { isDarkColorScheme } = useColorScheme();
+
   return (
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#f4511e",
+          backgroundColor: isDarkColorScheme ? "#1f2937" : "#3b82f6",
         },
         headerTintColor: "#fff",
         headerTitleStyle: {
