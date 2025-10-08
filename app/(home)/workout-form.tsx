@@ -118,7 +118,7 @@ export default function WorkoutForm() {
       };
 
       await insertWorkout(drizzleDb, workoutData);
-      router.push("/(workouts)");
+      router.push("(home)/(workouts)"); // TODO: Fix
       reset(DEFAULT_WORKOUT_VALUES);
     } catch (error) {
       console.error("Error saving workout:", error);
