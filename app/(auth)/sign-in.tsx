@@ -1,6 +1,6 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Text, TextInput, View } from "react-native";
 import React from "react";
 import { Button } from "~/components/ui/button";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -43,21 +43,71 @@ export default function Page() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <View className="flex-[.1]" />
-      <Text className="text-gray-800 dark:text-white">Sign in</Text>
-      <TextInput
-        autoCapitalize="none"
-        value={emailAddress}
-        placeholder="Enter email"
-        onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-      />
-      <TextInput
-        value={password}
-        placeholder="Enter password"
-        secureTextEntry={true}
-        onChangeText={(password) => setPassword(password)}
-      />
-      <Button onPress={onSignInPress}>Continue</Button>
-      <Button>Sign up</Button>
+      <View className="flex-1 justify-center items-center p-4 ">
+        <View style={{ gap: 20, alignItems: "center" }}>
+          <Image
+            source={require("@/assets/images/icon.png")}
+            style={{ width: 100, height: 100 }}
+          />
+          <Text className="text-3xl font-bold dark:text-white">
+            Lifting Log
+          </Text>
+          <Text className="dark:text-white">Sign in to continue</Text>
+          {/* {errors.map((error) => (
+            <Text key={error.code}>{error.code}</Text>
+          ))} */}
+        </View>
+
+        <View className="flex-[1]" />
+
+        <TextInput
+          className="mb-5"
+          style={{
+            backgroundColor: "white",
+            padding: 14,
+            borderRadius: 14,
+            width: "100%",
+          }}
+          autoCapitalize="none"
+          value={emailAddress}
+          placeholder="Enter email"
+          onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+        />
+        <TextInput
+          className="mb-5"
+          style={{
+            backgroundColor: "white",
+            padding: 14,
+            borderRadius: 14,
+            width: "100%",
+          }}
+          value={password}
+          placeholder="Enter password"
+          secureTextEntry={true}
+          onChangeText={(password) => setPassword(password)}
+        />
+        <Button onPress={onSignInPress} className="mb-5">
+          Continue
+        </Button>
+        <Button className="mb-5">Sign up</Button>
+        <Button
+          className="flex-row items-center justify-center gap-3 mb-8"
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            marginBottom: 30,
+          }}
+        >
+          <Image
+            source={require("@/assets/images/google-icon.png")}
+            className="w-5 h-5"
+            style={{ width: 20, height: 20 }}
+          />
+          <Text className="font-medium">Sign in with Google</Text>
+        </Button>
+      </View>
     </SafeAreaView>
   );
 }
