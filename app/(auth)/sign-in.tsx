@@ -60,44 +60,13 @@ export default function Page() {
 
         <View className="flex-[1]" />
 
-        <TextInput
-          className="mb-5"
-          style={{
-            backgroundColor: "white",
-            padding: 14,
-            borderRadius: 14,
-            width: "100%",
-          }}
-          autoCapitalize="none"
-          value={emailAddress}
-          placeholder="Enter email"
-          onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-        />
-        <TextInput
-          className="mb-5"
-          style={{
-            backgroundColor: "white",
-            padding: 14,
-            borderRadius: 14,
-            width: "100%",
-          }}
-          value={password}
-          placeholder="Enter password"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
-        <Button onPress={onSignInPress} className="mb-5">
-          Continue
-        </Button>
-        <Button className="mb-5">Sign up</Button>
         <Button
-          className="flex-row items-center justify-center gap-3 mb-8"
+          className="flex-row items-center justify-center gap-3 mb-6"
           style={{
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
             gap: 10,
-            marginBottom: 30,
           }}
         >
           <Image
@@ -107,6 +76,41 @@ export default function Page() {
           />
           <Text className="font-medium">Sign in with Google</Text>
         </Button>
+
+        <View className="flex-row items-center mb-6">
+          <View className="flex-1 h-px bg-gray-600" />
+          <Text className="mx-4 text-gray-400 text-sm">
+            or continue with email
+          </Text>
+          <View className="flex-1 h-px bg-gray-600" />
+        </View>
+
+        <TextInput
+          className="mb-4 bg-white p-3 rounded-xl w-full"
+          autoCapitalize="none"
+          value={emailAddress}
+          placeholder="Enter email"
+          placeholderTextColor="#9CA3AF"
+          onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+        />
+        <TextInput
+          className="mb-5 bg-white p-3 rounded-xl w-full"
+          value={password}
+          placeholder="Enter password"
+          placeholderTextColor="#9CA3AF"
+          secureTextEntry={true}
+          onChangeText={(password) => setPassword(password)}
+        />
+        <Button onPress={onSignInPress} className="mb-8">
+          Continue
+        </Button>
+
+        <View className="flex-row justify-center">
+          <Text className="text-gray-400">Don't have an account? </Text>
+          <Link href="/(auth)/sign-up">
+            <Text className="text-white font-medium">Sign up</Text>
+          </Link>
+        </View>
       </View>
     </SafeAreaView>
   );
