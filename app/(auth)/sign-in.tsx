@@ -2,6 +2,8 @@ import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import React from "react";
+import { Button } from "~/components/ui/button";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -39,8 +41,9 @@ export default function Page() {
   };
 
   return (
-    <View>
-      <Text>Sign in</Text>
+    <SafeAreaView className="flex-1 bg-black">
+      <View className="flex-[.1]" />
+      <Text className="text-gray-800 dark:text-white">Sign in</Text>
       <TextInput
         autoCapitalize="none"
         value={emailAddress}
@@ -53,14 +56,8 @@ export default function Page() {
         secureTextEntry={true}
         onChangeText={(password) => setPassword(password)}
       />
-      <TouchableOpacity onPress={onSignInPress}>
-        <Text>Continue</Text>
-      </TouchableOpacity>
-      <View style={{ display: "flex", flexDirection: "row", gap: 3 }}>
-        <Link href="/sign-up">
-          <Text>Sign up</Text>
-        </Link>
-      </View>
-    </View>
+      <Button onPress={onSignInPress}>Continue</Button>
+      <Button>Sign up</Button>
+    </SafeAreaView>
   );
 }

@@ -7,10 +7,18 @@ import migrations from "@/drizzle/migrations";
 import { Suspense, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+import { useAuth } from "@clerk/clerk-expo";
+import { Redirect } from "expo-router";
 
 export const DATABASE_NAME = "db.db";
 
 export default function RootLayout() {
+  const { isSignedIn } = useAuth();
+
+  if (!isSignedIn) {
+    return <Redirect href={"/sign-in"} />;
+  }
+
   const expo = openDatabaseSync(DATABASE_NAME);
   const db = drizzle(expo);
 
