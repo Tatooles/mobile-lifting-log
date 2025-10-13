@@ -1,7 +1,9 @@
 import * as React from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View, Image } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
+import { Button } from "~/components/ui/button";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -65,46 +67,88 @@ export default function SignUpScreen() {
 
   if (pendingVerification) {
     return (
-      <>
-        <Text>Verify your email</Text>
-        <TextInput
-          value={code}
-          placeholder="Enter your verification code"
-          onChangeText={(code) => setCode(code)}
-        />
-        <TouchableOpacity onPress={onVerifyPress}>
-          <Text>Verify</Text>
-        </TouchableOpacity>
-      </>
+      <SafeAreaView className="flex-1 bg-black">
+        <View className="flex-[.1]" />
+        <View className="flex-1 justify-center items-center p-4">
+          <View style={{ gap: 20, alignItems: "center" }}>
+            <Image
+              source={require("@/assets/images/icon.png")}
+              style={{ width: 100, height: 100 }}
+            />
+            <Text className="text-3xl font-bold dark:text-white">
+              Lifting Log
+            </Text>
+            <Text className="dark:text-white">Verify your email</Text>
+          </View>
+
+          <View className="flex-[1]" />
+
+          <TextInput
+            className="mb-5 bg-white p-3 rounded-xl w-full"
+            value={code}
+            placeholder="Enter your verification code"
+            placeholderTextColor="#9CA3AF"
+            onChangeText={(code) => setCode(code)}
+          />
+          <Button onPress={onVerifyPress} className="mb-8">
+            Verify
+          </Button>
+
+          <View className="flex-row justify-center">
+            <Text className="text-gray-400">Didn't receive the code? </Text>
+            <TouchableOpacity onPress={() => setPendingVerification(false)}>
+              <Text className="text-white font-medium">Try again</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View>
-      <>
-        <Text>Sign up</Text>
+    <SafeAreaView className="flex-1 bg-black">
+      <View className="flex-[.1]" />
+      <View className="flex-1 justify-center items-center p-4">
+        <View style={{ gap: 20, alignItems: "center" }}>
+          <Image
+            source={require("@/assets/images/icon.png")}
+            style={{ width: 100, height: 100 }}
+          />
+          <Text className="text-3xl font-bold dark:text-white">
+            Lifting Log
+          </Text>
+          <Text className="dark:text-white">Create your account</Text>
+        </View>
+
+        <View className="flex-[1]" />
+
         <TextInput
+          className="mb-4 bg-white p-3 rounded-xl w-full"
           autoCapitalize="none"
           value={emailAddress}
           placeholder="Enter email"
+          placeholderTextColor="#9CA3AF"
           onChangeText={(email) => setEmailAddress(email)}
         />
         <TextInput
+          className="mb-5 bg-white p-3 rounded-xl w-full"
           value={password}
           placeholder="Enter password"
+          placeholderTextColor="#9CA3AF"
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
         />
-        <TouchableOpacity onPress={onSignUpPress}>
-          <Text>Continue</Text>
-        </TouchableOpacity>
-        <View style={{ display: "flex", flexDirection: "row", gap: 3 }}>
-          <Text>Already have an account?</Text>
-          <Link href="/sign-in">
-            <Text>Sign in</Text>
+        <Button onPress={onSignUpPress} className="mb-8">
+          Continue
+        </Button>
+
+        <View className="flex-row justify-center">
+          <Text className="text-gray-400">Already have an account? </Text>
+          <Link href="/(auth)/sign-in">
+            <Text className="text-white font-medium">Sign in</Text>
           </Link>
         </View>
-      </>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
