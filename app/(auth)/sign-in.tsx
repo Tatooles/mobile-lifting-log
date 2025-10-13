@@ -1,19 +1,55 @@
-import { useSignIn } from "@clerk/clerk-expo";
+import { isClerkAPIResponseError, useSignIn, useSSO } from "@clerk/clerk-expo";
+import { ClerkAPIError } from "@clerk/types";
+import * as AuthSession from "expo-auth-session";
 import { Link, useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useState } from "react";
 import { Image, Text, TextInput, View } from "react-native";
-import React from "react";
-import { Button } from "~/components/ui/button";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "~/components/ui/button";
+
+// Handle any pending authentication sessions
+WebBrowser.maybeCompleteAuthSession();
 
 export default function Page() {
+  const { startSSOFlow } = useSSO();
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<ClerkAPIError[]>([]);
+
+  const handleSignInWithGoogle = async () => {
+    if (!isLoaded) return;
+
+    try {
+      // Start the authentication process by calling `startSSOFlow()`
+      const { createdSessionId, signIn, signUp } = await startSSOFlow({
+        strategy: "oauth_google",
+        // Defaults to current path
+        redirectUrl: AuthSession.makeRedirectUri(),
+      });
+
+      // If sign in was successful, set the active session
+      if (createdSessionId) {
+        await setActive({ session: createdSessionId });
+      } else {
+        // If there is no `createdSessionId`,
+        // there are missing requirements, such as MFA
+        // Use the `signIn` or `signUp` returned from `startSSOFlow`
+        // to handle next steps
+      }
+    } catch (err) {
+      // See https://clerk.com/docs/custom-flows/error-handling
+      // for more info on error handling
+      if (isClerkAPIResponseError(err)) setErrors(err.errors);
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
 
   // Handle the submission of the sign-in form
-  const onSignInPress = async () => {
+  const handleSignInWithEmail = async () => {
     if (!isLoaded) return;
 
     // Start the sign-in process using the email and password provided
@@ -27,7 +63,6 @@ export default function Page() {
       // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/");
       } else {
         // If the status isn't complete, check why. User might need to
         // complete further steps.
@@ -36,6 +71,7 @@ export default function Page() {
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
+      if (isClerkAPIResponseError(err)) setErrors(err.errors);
       console.error(JSON.stringify(err, null, 2));
     }
   };
@@ -52,22 +88,21 @@ export default function Page() {
           <Text className="text-3xl font-bold dark:text-white">
             Lifting Log
           </Text>
-          <Text className="dark:text-white">Sign in to continue</Text>
-          {/* {errors.map((error) => (
-            <Text key={error.code}>{error.code}</Text>
-          ))} */}
+          <Text className="dark:text-white">
+            The best way to log your lifts.
+          </Text>
+          {errors.map((error) => (
+            <Text className="dark:text-white" key={error.code}>
+              {error.code}
+            </Text>
+          ))}
         </View>
 
         <View className="flex-[1]" />
 
         <Button
+          onPress={handleSignInWithGoogle}
           className="flex-row items-center justify-center gap-3 mb-6"
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-          }}
         >
           <Image
             source={require("@/assets/images/google-icon.png")}
@@ -101,12 +136,12 @@ export default function Page() {
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
         />
-        <Button onPress={onSignInPress} className="mb-8">
+        <Button onPress={handleSignInWithEmail} className="mb-8">
           Sign in
         </Button>
 
         <View className="flex-row justify-center">
-          <Text className="text-gray-400">Don't have an account? </Text>
+          <Text className="text-gray-400">Don't have an account?</Text>
           <Link href="/(auth)/sign-up">
             <Text className="text-white font-medium">Sign up</Text>
           </Link>

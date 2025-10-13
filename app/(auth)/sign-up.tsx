@@ -1,9 +1,9 @@
-import * as React from "react";
-import { Text, TextInput, TouchableOpacity, View, Image } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import { Button } from "~/components/ui/button";
+import * as React from "react";
+import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "~/components/ui/button";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -139,7 +139,7 @@ export default function SignUpScreen() {
           onChangeText={(password) => setPassword(password)}
         />
         <Button onPress={onSignUpPress} className="mb-8">
-          Continue
+          Create Account
         </Button>
 
         <View className="flex-row justify-center">
