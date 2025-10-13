@@ -1,8 +1,11 @@
-import { Stack } from "expo-router";
+import { useUser } from "@clerk/clerk-expo";
+import { Link, Stack } from "expo-router";
+import { Image } from "react-native";
 import { useColorScheme } from "~/lib/useColorScheme";
 
 export default function HomeLayout() {
   const { isDarkColorScheme } = useColorScheme();
+  const { user } = useUser();
 
   return (
     <Stack
@@ -16,10 +19,32 @@ export default function HomeLayout() {
         },
       }}
     >
-      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="index"
+        options={{
+          headerLargeTitle: true,
+          title: "Home", // left space for android
+          headerLeft: () => (
+            <Link href="/home/profile">
+              <Image
+                source={{ uri: user?.imageUrl }}
+                className="rounded-full w-10 h-10"
+                // style={{ width: 32, height: 32 }}
+              />
+            </Link>
+          ),
+        }}
+      />
       <Stack.Screen name="settings" />
       <Stack.Screen name="records" />
       <Stack.Screen name="calculators" />
+      <Stack.Screen
+        name="profile"
+        options={{
+          presentation: "modal",
+          title: "Profile",
+        }}
+      />
     </Stack>
   );
 }

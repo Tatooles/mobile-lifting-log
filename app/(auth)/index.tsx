@@ -78,7 +78,7 @@ export default function Page() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <View className="flex-[.1]" />
-      <View className="flex-1 justify-center items-center p-4 ">
+      <View className="flex-1 justify-center items-center p-4">
         <View style={{ gap: 20, alignItems: "center" }}>
           <Image
             source={require("@/assets/images/icon.png")}
