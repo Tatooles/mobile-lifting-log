@@ -86,7 +86,7 @@ export default function Page() {
         </View>
 
         <TextInput
-          className="mb-4 bg-white p-3 rounded-xl w-full"
+          className="mb-4 bg-gray-800 border border-gray-600 p-3 rounded-xl w-full text-white"
           autoCapitalize="none"
           value={emailAddress}
           placeholder="Enter email"
@@ -94,7 +94,7 @@ export default function Page() {
           onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
         />
         <TextInput
-          className="mb-5 bg-white p-3 rounded-xl w-full"
+          className="mb-5 bg-gray-800 border border-gray-600 p-3 rounded-xl w-full text-white"
           value={password}
           placeholder="Enter password"
           placeholderTextColor="#9CA3AF"
@@ -102,7 +102,7 @@ export default function Page() {
           onChangeText={(password) => setPassword(password)}
         />
         <Button onPress={onSignInPress} className="mb-8">
-          Continue
+          Sign in
         </Button>
 
         <View className="flex-row justify-center">

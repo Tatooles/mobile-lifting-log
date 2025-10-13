@@ -84,7 +84,7 @@ export default function SignUpScreen() {
           <View className="flex-[1]" />
 
           <TextInput
-            className="mb-5 bg-white p-3 rounded-xl w-full"
+            className="mb-5 bg-gray-800 border border-gray-600 p-3 rounded-xl w-full text-white"
             value={code}
             placeholder="Enter your verification code"
             placeholderTextColor="#9CA3AF"
@@ -123,7 +123,7 @@ export default function SignUpScreen() {
         <View className="flex-[1]" />
 
         <TextInput
-          className="mb-4 bg-white p-3 rounded-xl w-full"
+          className="mb-4 bg-gray-800 border border-gray-600 p-3 rounded-xl w-full text-white"
           autoCapitalize="none"
           value={emailAddress}
           placeholder="Enter email"
@@ -131,7 +131,7 @@ export default function SignUpScreen() {
           onChangeText={(email) => setEmailAddress(email)}
         />
         <TextInput
-          className="mb-5 bg-white p-3 rounded-xl w-full"
+          className="mb-5 bg-gray-800 border border-gray-600 p-3 rounded-xl w-full text-white"
           value={password}
           placeholder="Enter password"
           placeholderTextColor="#9CA3AF"
