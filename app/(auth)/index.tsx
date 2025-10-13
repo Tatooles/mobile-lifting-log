@@ -1,7 +1,7 @@
 import { isClerkAPIResponseError, useSignIn, useSSO } from "@clerk/clerk-expo";
 import { ClerkAPIError } from "@clerk/types";
 import * as AuthSession from "expo-auth-session";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Image, Text, TextInput, View } from "react-native";
@@ -14,7 +14,6 @@ WebBrowser.maybeCompleteAuthSession();
 export default function Page() {
   const { startSSOFlow } = useSSO();
   const { signIn, setActive, isLoaded } = useSignIn();
-  const router = useRouter();
 
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");

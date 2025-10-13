@@ -1,5 +1,5 @@
 import { useSignUp } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import * as React from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,7 +7,6 @@ import { Button } from "~/components/ui/button";
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
-  const router = useRouter();
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -52,7 +51,6 @@ export default function SignUpScreen() {
       // and redirect the user
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace("/");
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.
@@ -144,7 +142,7 @@ export default function SignUpScreen() {
 
         <View className="flex-row justify-center">
           <Text className="text-gray-400">Already have an account? </Text>
-          <Link href="/(auth)/sign-in">
+          <Link href="/(auth)">
             <Text className="text-white font-medium">Sign in</Text>
           </Link>
         </View>

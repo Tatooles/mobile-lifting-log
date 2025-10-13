@@ -26,7 +26,7 @@ export default function HomeScreen() {
         </Link>
       </SignedIn>
       <SignedOut>
-        <Link href="/(auth)/sign-in">
+        <Link href="/(auth)">
           <Text>Sign in</Text>
         </Link>
         <Link href="/(auth)/sign-up">
