@@ -1,7 +1,6 @@
 import { Text, View } from "react-native";
 import { Link } from "expo-router";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
-import { SignOutButton } from "~/components/SignOutButton";
 
 export default function HomeScreen() {
   const { user } = useUser();
