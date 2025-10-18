@@ -3,6 +3,7 @@ import { Pressable, PressableProps, Text, ViewStyle } from "react-native";
 export function Button({ children, style, ...props }: PressableProps) {
   return (
     <Pressable
+      className="bg-white p-4 rounded-xl w-full"
       style={[
         {
           backgroundColor: "white",
@@ -15,9 +16,7 @@ export function Button({ children, style, ...props }: PressableProps) {
       {...props}
     >
       {typeof children === "string" ? (
-        <Text style={{ textAlign: "center", fontWeight: "500" }}>
-          {children}
-        </Text>
+        <Text className="text-center font-medium">{children}</Text>
       ) : (
         children
       )}

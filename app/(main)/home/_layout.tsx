@@ -23,13 +23,12 @@ export default function HomeLayout() {
         name="index"
         options={{
           headerLargeTitle: true,
-          title: "Home", // left space for android
+          title: "Home",
           headerLeft: () => (
             <Link href="/home/profile">
               <Image
                 source={{ uri: user?.imageUrl }}
                 className="rounded-full w-10 h-10"
-                // style={{ width: 32, height: 32 }}
               />
             </Link>
           ),

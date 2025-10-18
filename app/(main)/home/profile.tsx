@@ -22,7 +22,7 @@ export default function ProfileScreen() {
     <View className="flex-1 items-center gap-4 bg-gray-50 dark:bg-gray-900 text-white p-4">
       <Image
         source={{ uri: user?.imageUrl }}
-        style={{ width: 100, height: 100, borderRadius: 50 }}
+        className="w-24 h-24 rounded-full"
       />
       <View>
         {user?.fullName && (

@@ -79,10 +79,10 @@ export default function SignInScreen() {
     <SafeAreaView className="flex-1 bg-black">
       <View className="flex-[.1]" />
       <View className="flex-1 justify-center items-center p-4">
-        <View style={{ gap: 20, alignItems: "center" }}>
+        <View className="gap-5 items-center">
           <Image
             source={require("@/assets/images/icon.png")}
-            style={{ width: 100, height: 100 }}
+            className="w-24 h-24"
           />
           <Text className="text-3xl font-bold dark:text-white">
             Lifting Log
@@ -105,8 +105,7 @@ export default function SignInScreen() {
         >
           <Image
             source={require("@/assets/images/google-icon.png")}
-            className="w-5 h-5"
-            style={{ width: 20, height: 20 }}
+            className="w-6 h-6"
           />
           <Text className="font-medium">Sign in with Google</Text>
         </Button>

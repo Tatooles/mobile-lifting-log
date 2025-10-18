@@ -68,10 +68,10 @@ export default function SignUpScreen() {
       <SafeAreaView className="flex-1 bg-black">
         <View className="flex-[.1]" />
         <View className="flex-1 justify-center items-center p-4">
-          <View style={{ gap: 20, alignItems: "center" }}>
+          <View className="gap-5 items-center">
             <Image
               source={require("@/assets/images/icon.png")}
-              style={{ width: 100, height: 100 }}
+              className="w-24 h-24"
             />
             <Text className="text-3xl font-bold dark:text-white">
               Lifting Log
@@ -107,10 +107,10 @@ export default function SignUpScreen() {
     <SafeAreaView className="flex-1 bg-black">
       <View className="flex-[.1]" />
       <View className="flex-1 justify-center items-center p-4">
-        <View style={{ gap: 20, alignItems: "center" }}>
+        <View className="gap-5 items-center">
           <Image
             source={require("@/assets/images/icon.png")}
-            style={{ width: 100, height: 100 }}
+            className="w-24 h-24"
           />
           <Text className="text-3xl font-bold dark:text-white">
             Lifting Log
