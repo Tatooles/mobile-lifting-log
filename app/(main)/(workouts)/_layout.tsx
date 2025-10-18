@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { useColorScheme } from "~/lib/useColorScheme";
 
-export default function Layout() {
+export default function WorkoutsLayout() {
   const { isDarkColorScheme } = useColorScheme();
 
   return (

@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { Image, Text, View } from "react-native";
 import { Button } from "~/components/ui/button";
 
-export default function Profile() {
+export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
   const router = useRouter();

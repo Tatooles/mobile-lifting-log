@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/button";
 // Handle any pending authentication sessions
 WebBrowser.maybeCompleteAuthSession();
 
-export default function Page() {
+export default function SignInScreen() {
   const { startSSOFlow } = useSSO();
   const { signIn, setActive, isLoaded } = useSignIn();
 
@@ -140,7 +140,7 @@ export default function Page() {
         </Button>
 
         <View className="flex-row justify-center">
-          <Text className="text-gray-400">Don't have an account?</Text>
+          <Text className="text-gray-400">Don't have an account? </Text>
           <Link href="/(auth)/sign-up">
             <Text className="text-white font-medium">Sign up</Text>
           </Link>
