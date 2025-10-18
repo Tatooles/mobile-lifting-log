@@ -1,18 +1,14 @@
 import { Pressable, PressableProps, Text, ViewStyle } from "react-native";
+import { cn } from "~/lib/utils";
 
-export function Button({ children, style, ...props }: PressableProps) {
+interface ButtonProps extends PressableProps {
+  className?: string;
+}
+
+export function Button({ children, style, className, ...props }: ButtonProps) {
   return (
     <Pressable
-      className="bg-white p-4 rounded-xl w-full"
-      style={[
-        {
-          backgroundColor: "white",
-          padding: 14,
-          borderRadius: 14,
-          width: "100%",
-        },
-        style as ViewStyle,
-      ]}
+      className={cn("bg-white p-4 rounded-xl w-full", className)}
       {...props}
     >
       {typeof children === "string" ? (
