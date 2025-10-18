@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { useColorScheme } from "~/lib/useColorScheme";
 
-export default function HomeLayout() {
+export default function WorkoutsLayout() {
   const { isDarkColorScheme } = useColorScheme();
 
   return (
@@ -16,10 +16,7 @@ export default function HomeLayout() {
         },
       }}
     >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="settings" />
-      <Stack.Screen name="records" />
-      <Stack.Screen name="calculators" />
+      <Stack.Screen name="index" options={{ title: "Workouts" }} />
     </Stack>
   );
 }
