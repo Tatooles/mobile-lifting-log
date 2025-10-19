@@ -11,7 +11,6 @@ import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 export const DATABASE_NAME = "db.db";
 
 export default function RootLayout() {
-  // TODO: Clean this up if possible. Not very readable
   const [db, setDb] = useState<any>(null);
   const [isDbReady, setIsDbReady] = useState(false);
 
@@ -27,47 +26,55 @@ export default function RootLayout() {
 
   if (!isDbReady) return <ActivityIndicator size="large" />;
 
-  return <MigrationHandler db={db} />;
+  return (
+    <MigrationHandler db={db}>
+      <Suspense fallback={<ActivityIndicator size="large" />}>
+        <SQLiteProvider
+          databaseName={DATABASE_NAME}
+          options={{ enableChangeListener: true }}
+          useSuspense
+        >
+          <GestureHandlerRootView>
+            <NativeTabs>
+              <NativeTabs.Trigger name="home">
+                <Label>Home</Label>
+                <Icon sf={{ default: "house", selected: "house.fill" }} />
+              </NativeTabs.Trigger>
+              <NativeTabs.Trigger name="workout-form">
+                <Label>Workout</Label>
+                <Icon sf={{ default: "plus", selected: "plus.circle.fill" }} />
+              </NativeTabs.Trigger>
+              <NativeTabs.Trigger name="(workouts)">
+                <Label>History</Label>
+                <Icon
+                  sf={{
+                    default: "figure.strengthtraining.traditional.circle",
+                    selected: "figure.strengthtraining.traditional.circle.fill",
+                  }}
+                />
+              </NativeTabs.Trigger>
+            </NativeTabs>
+          </GestureHandlerRootView>
+        </SQLiteProvider>
+      </Suspense>
+    </MigrationHandler>
+  );
 }
 
-function MigrationHandler({ db }: { db: any }) {
+function MigrationHandler({
+  db,
+  children,
+}: {
+  db: any;
+  children: React.ReactNode;
+}) {
   const { success, error } = useMigrations(db, migrations);
 
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
-  if (!success) return null;
+  if (!success) return <ActivityIndicator size="large" />;
 
-  return (
-    <Suspense fallback={<ActivityIndicator size="large" />}>
-      <SQLiteProvider
-        databaseName={DATABASE_NAME}
-        options={{ enableChangeListener: true }}
-        useSuspense
-      >
-        <GestureHandlerRootView>
-          <NativeTabs>
-            <NativeTabs.Trigger name="home">
-              <Label>Home</Label>
-              <Icon sf={{ default: "house", selected: "house.fill" }} />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="workout-form">
-              <Label>Workout</Label>
-              <Icon sf={{ default: "plus", selected: "plus.circle.fill" }} />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="(workouts)">
-              <Label>History</Label>
-              <Icon
-                sf={{
-                  default: "figure.strengthtraining.traditional.circle",
-                  selected: "figure.strengthtraining.traditional.circle.fill",
-                }}
-              />
-            </NativeTabs.Trigger>
-          </NativeTabs>
-        </GestureHandlerRootView>
-      </SQLiteProvider>
-    </Suspense>
-  );
+  return <>{children}</>;
 }
