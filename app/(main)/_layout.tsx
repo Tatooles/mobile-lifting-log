@@ -1,21 +1,36 @@
 import "../../global.css";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { openDatabaseSync, SQLiteProvider } from "expo-sqlite";
+import { openDatabaseAsync, SQLiteProvider } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
-import { useAuth } from "@clerk/clerk-expo";
-import { Redirect } from "expo-router";
 
 export const DATABASE_NAME = "db.db";
 
 export default function RootLayout() {
-  const expo = openDatabaseSync(DATABASE_NAME);
-  const db = drizzle(expo);
+  // TODO: Clean this up if possible. Not very readable
+  const [db, setDb] = useState<any>(null);
+  const [isDbReady, setIsDbReady] = useState(false);
 
+  useEffect(() => {
+    const initializeDatabase = async () => {
+      const expo = await openDatabaseAsync(DATABASE_NAME);
+      const drizzleDb = drizzle(expo);
+      setDb(drizzleDb);
+      setIsDbReady(true);
+    };
+    initializeDatabase();
+  }, []);
+
+  if (!isDbReady) return <ActivityIndicator size="large" />;
+
+  return <MigrationHandler db={db} />;
+}
+
+function MigrationHandler({ db }: { db: any }) {
   const { success, error } = useMigrations(db, migrations);
 
   useEffect(() => {
