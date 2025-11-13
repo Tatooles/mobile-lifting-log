@@ -1,27 +1,16 @@
 import "../../global.css";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { openDatabaseSync, SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
+import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
+import { Suspense } from "react";
+import { ActivityIndicator } from "react-native";
+import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
-import { Suspense, useEffect } from "react";
-import { ActivityIndicator } from "react-native";
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 
 export const DATABASE_NAME = "lifting-log-mobile-1";
 
 export default function RootLayout() {
-  const expo = openDatabaseSync(DATABASE_NAME);
-  const db = drizzle(expo);
-
-  const { success, error } = useMigrations(db, migrations);
-
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  if (!success) return null;
-
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
       <SQLiteProvider
@@ -34,60 +23,39 @@ export default function RootLayout() {
           },
         }}
         onInit={async (db: SQLiteDatabase) => {
+          // Step 1: Apply local migrations first
           try {
-            await db.syncLibSQL();
-          } catch (error) {
-            console.error(error);
-          }
-
-          // Define the target database version.
-          const DATABASE_VERSION = 1;
-
-          // PRAGMA is a special command in SQLite used to query or modify database settings. For example, PRAGMA user_version retrieves or sets a custom schema version number, helping you track migrations.
-          // Retrieve the current database version using PRAGMA.
-          let result = await db.getFirstAsync<{
-            user_version: number;
-          } | null>("PRAGMA user_version");
-          let currentDbVersion = result?.user_version ?? 0;
-
-          // If the current version is already equal or newer, no migration is needed.
-          if (currentDbVersion >= DATABASE_VERSION) {
-            console.log("No migration needed, DB version:", currentDbVersion);
-            return;
-          }
-
-          // For a new or uninitialized database (version 0), apply the initial migration.
-          if (currentDbVersion === 0) {
-            // Note: libSQL does not support WAL (Write-Ahead Logging) mode.
-            // await db.execAsync(`PRAGMA journal_mode = 'wal';`);
-
-            // Create the 'notes' table with three columns:
-            // - id: an integer primary key that cannot be null.
-            // - title: a text column.
-            // - content: a text column.
-            // - modifiedDate: a text column.
-            // TODO: Create my own migration. I feel like the migrations folder is supposed to do this?
-            // await db.execAsync(
-            //   `CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY NOT NULL, title TEXT, content TEXT, modifiedDate TEXT);`
-            // );
-            console.log(
-              "Initial migration applied, DB version:",
-              DATABASE_VERSION
+            console.log("Applying local database migrations...");
+            const drizzleDb = drizzle(db);
+            const { success, error } = await useMigrations(
+              drizzleDb,
+              migrations
             );
-            // Update the current version after applying the initial migration.
-            currentDbVersion = 1;
-          } else {
-            console.log("DB version:", currentDbVersion);
+
+            if (error) {
+              console.error("Migration error:", error);
+              throw error;
+            }
+
+            if (success) {
+              console.log("Local migrations applied successfully");
+            }
+          } catch (error) {
+            console.error("Failed to apply migrations:", error);
+            throw error;
           }
 
-          // Future migrations for later versions can be added here.
-          // Example:
-          // if (currentDbVersion === 1) {
-          //   // Add migration steps for upgrading from version 1 to a higher version.
-          // }
-
-          // Set the database version to the target version after migration.
-          await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
+          // Step 2: Sync with remote Turso database
+          // Note: This only syncs DATA, not schema
+          // Schema must be pushed to Turso via: npm run db:push
+          try {
+            console.log("Syncing with remote Turso database...");
+            await db.syncLibSQL();
+            console.log("Successfully synced with remote database");
+          } catch (error) {
+            console.error("Error syncing with remote database:", error);
+            // Don't throw here - allow app to work offline if sync fails
+          }
         }}
         useSuspense
       >

@@ -7,7 +7,6 @@ export const insertWorkout = async (
   db: ExpoSQLiteDatabase<typeof schema>,
   workoutData: WorkoutData
 ) => {
-  // TODO: The tables will not be initialized for new users.
   try {
     await db.transaction(async () => {
       const workoutResult = await db.insert(workout).values({
