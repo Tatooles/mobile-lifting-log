@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { ActivityIndicator } from "react-native";
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { migrate } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 
 export const DATABASE_NAME = "lifting-log-mobile-1";
@@ -27,19 +27,8 @@ export default function RootLayout() {
           try {
             console.log("Applying local database migrations...");
             const drizzleDb = drizzle(db);
-            const { success, error } = await useMigrations(
-              drizzleDb,
-              migrations
-            );
-
-            if (error) {
-              console.error("Migration error:", error);
-              throw error;
-            }
-
-            if (success) {
-              console.log("Local migrations applied successfully");
-            }
+            await migrate(drizzleDb, migrations);
+            console.log("Local migrations applied successfully");
           } catch (error) {
             console.error("Failed to apply migrations:", error);
             throw error;
@@ -48,13 +37,25 @@ export default function RootLayout() {
           // Step 2: Sync with remote Turso database
           // Note: This only syncs DATA, not schema
           // Schema must be pushed to Turso via: npm run db:push
+          // Note: syncLibSQL only works in development builds, not Expo Go or web
           try {
             console.log("Syncing with remote Turso database...");
             await db.syncLibSQL();
             console.log("Successfully synced with remote database");
-          } catch (error) {
-            console.error("Error syncing with remote database:", error);
-            // Don't throw here - allow app to work offline if sync fails
+          } catch (error: any) {
+            // Check if it's the "not supported" error
+            if (
+              error?.message?.includes("not supported") ||
+              error?.message?.includes("syncLibSQL")
+            ) {
+              console.warn(
+                "syncLibSQL not available in this environment (Expo Go/web). " +
+                  "Use a development build for Turso sync support."
+              );
+            } else {
+              console.error("Error syncing with remote database:", error);
+              // Don't throw here - allow app to work offline if sync fails
+            }
           }
         }}
         useSuspense
