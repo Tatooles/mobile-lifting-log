@@ -9,7 +9,6 @@ import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import WorkoutItem from "./workout-item";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -52,14 +51,12 @@ export default function WorkoutsScreen() {
   );
 
   return (
-    <SafeAreaProvider>
-      <FlatList
-        data={workouts}
-        ListHeaderComponent={renderHeader}
-        renderItem={({ item }) => <WorkoutItem workout={item} />}
-        keyExtractor={(item) => item.id.toString()}
-        className="bg-gray-50 dark:bg-gray-900 p-4"
-      />
-    </SafeAreaProvider>
+    <FlatList
+      data={workouts}
+      ListHeaderComponent={renderHeader}
+      renderItem={({ item }) => <WorkoutItem workout={item} />}
+      keyExtractor={(item) => item.id.toString()}
+      className="bg-gray-50 dark:bg-gray-900 p-4"
+    />
   );
 }

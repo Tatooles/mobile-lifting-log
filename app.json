@@ -37,7 +37,12 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-sqlite"
+      [
+        "expo-sqlite",
+        {
+          "useLibSQL": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
