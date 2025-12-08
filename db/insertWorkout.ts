@@ -1,18 +1,19 @@
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { exercise, set, workout } from "./schema";
-import { WorkoutData } from "~/app/(home)/workout-form";
+import { WorkoutData } from "~/app/(main)/workout-form";
 import * as schema from "@/db/schema";
 
 export const insertWorkout = async (
   db: ExpoSQLiteDatabase<typeof schema>,
-  workoutData: WorkoutData
+  workoutData: WorkoutData,
+  userId: string
 ) => {
   try {
     await db.transaction(async () => {
       const workoutResult = await db.insert(workout).values({
         name: workoutData.name,
         date: workoutData.date.toString(),
-        userId: "", // Not relevant for this local db
+        userId: userId,
       });
 
       for (const exerciseData of workoutData.exercises) {

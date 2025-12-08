@@ -11,7 +11,6 @@
     "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
-      "jsEngine": "jsc",
       "bundleIdentifier": "com.anonymous.expoliftinglog"
     },
     "android": {
@@ -35,12 +34,6 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
-        }
-      ],
-      [
-        "expo-sqlite",
-        {
-          "useLibSQL": true
         }
       ]
     ],

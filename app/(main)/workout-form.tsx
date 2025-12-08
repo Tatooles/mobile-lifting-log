@@ -21,6 +21,7 @@ import {
   DEFAULT_WORKOUT_VALUES,
 } from "~/lib/schemas/workout";
 import * as schema from "@/db/schema";
+import { useAuth } from "@clerk/clerk-expo";
 
 interface ExerciseSet {
   reps: string;
@@ -65,6 +66,7 @@ export default function WorkoutForm() {
 
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
+  const { userId } = useAuth();
 
   const addExercise = () => {
     append({
@@ -103,6 +105,11 @@ export default function WorkoutForm() {
 
   const onSubmit = async (data: WorkoutFormData) => {
     try {
+      if (!userId) {
+        console.error("User not authenticated");
+        return;
+      }
+
       const workoutData: WorkoutData = {
         name: data.name,
         date: new Date(data.date),
@@ -117,7 +124,7 @@ export default function WorkoutForm() {
         })),
       };
 
-      await insertWorkout(drizzleDb, workoutData);
+      await insertWorkout(drizzleDb, workoutData, userId);
       router.push("/(main)/(workouts)");
       reset(DEFAULT_WORKOUT_VALUES);
     } catch (error) {
