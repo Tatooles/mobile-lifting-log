@@ -34,8 +34,6 @@ CREATE TABLE IF NOT EXISTS "set" (
 // Get Turso credentials from environment variables
 const TURSO_DATABASE_URL = process.env.EXPO_PUBLIC_TURSO_DB_URL;
 const TURSO_AUTH_TOKEN = process.env.EXPO_PUBLIC_TURSO_DB_AUTH_TOKEN;
-console.log("TURSO_DATABASE_URL", TURSO_DATABASE_URL);
-console.log("TURSO_AUTH_TOKEN", TURSO_AUTH_TOKEN);
 let dbConnection: DB | null = null;
 
 /**

@@ -8,23 +8,29 @@ export const insertWorkout = async (
   userId: string
 ) => {
   try {
-    // Insert workout
-    const workoutResult = await db.insert(workout).values({
-      name: workoutData.name,
-      date: workoutData.date.toString(),
-      userId: userId,
-    });
+    // Insert workout and get the ID back
+    const [insertedWorkout] = await db
+      .insert(workout)
+      .values({
+        name: workoutData.name,
+        date: workoutData.date.toString(),
+        userId: userId,
+      })
+      .returning({ id: workout.id });
 
-    const workoutId = Number(workoutResult.insertId);
+    const workoutId = insertedWorkout.id;
 
     for (const exerciseData of workoutData.exercises) {
-      const exerciseResult = await db.insert(exercise).values({
-        workoutId: workoutId,
-        name: exerciseData.name,
-        notes: exerciseData.notes,
-      });
+      const [insertedExercise] = await db
+        .insert(exercise)
+        .values({
+          workoutId: workoutId,
+          name: exerciseData.name,
+          notes: exerciseData.notes,
+        })
+        .returning({ id: exercise.id });
 
-      const exerciseId = Number(exerciseResult.insertId);
+      const exerciseId = insertedExercise.id;
 
       for (const setData of exerciseData.sets) {
         await db.insert(set).values({
