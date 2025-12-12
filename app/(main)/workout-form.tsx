@@ -9,8 +9,6 @@ import {
 } from "react-native";
 import { Trash2, Plus } from "lucide-react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useSQLiteContext } from "expo-sqlite";
-import { drizzle } from "drizzle-orm/expo-sqlite";
 import { insertWorkout } from "~/db/insertWorkout";
 import { router } from "expo-router";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
@@ -20,8 +18,8 @@ import {
   type WorkoutFormData,
   DEFAULT_WORKOUT_VALUES,
 } from "~/lib/schemas/workout";
-import * as schema from "@/db/schema";
 import { useAuth } from "@clerk/clerk-expo";
+import { useDatabase } from "~/lib/db";
 
 interface ExerciseSet {
   reps: string;
@@ -64,8 +62,7 @@ export default function WorkoutForm() {
     name: "exercises",
   });
 
-  const db = useSQLiteContext();
-  const drizzleDb = drizzle(db, { schema });
+  const { db, triggerRefresh } = useDatabase();
   const { userId } = useAuth();
 
   const addExercise = () => {
@@ -124,7 +121,8 @@ export default function WorkoutForm() {
         })),
       };
 
-      await insertWorkout(drizzleDb, workoutData, userId);
+      await insertWorkout(db, workoutData, userId);
+      triggerRefresh();
       router.push("/(main)/(workouts)");
       reset(DEFAULT_WORKOUT_VALUES);
     } catch (error) {

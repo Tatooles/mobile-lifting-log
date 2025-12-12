@@ -1,16 +1,12 @@
-import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { workout } from "./schema";
 import { eq } from "drizzle-orm";
-import { sql } from "drizzle-orm";
-import * as schema from "@/db/schema";
+import { LibsqlDatabase, getConnection } from "~/lib/db";
 
-export const deleteWorkout = async (
-  db: ExpoSQLiteDatabase<typeof schema>,
-  workoutId: number
-) => {
+export const deleteWorkout = async (db: LibsqlDatabase, workoutId: number) => {
   try {
     // Enable foreign key support
-    await db.run(sql`PRAGMA foreign_keys = ON;`);
+    const connection = getConnection();
+    connection.execute("PRAGMA foreign_keys = ON;");
 
     await db.delete(workout).where(eq(workout.id, workoutId));
   } catch (error) {

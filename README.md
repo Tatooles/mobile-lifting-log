@@ -25,6 +25,33 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## Turso Cloud Sync (Optional)
+
+This app supports offline-first sync with [Turso](https://turso.tech) using libsql embedded replicas via [op-sqlite](https://github.com/OP-Engineering/op-sqlite). Data is stored locally and synced to the cloud when you tap the "Sync with Cloud" button in the History tab.
+
+**Note:** This feature requires a [development build](https://docs.expo.dev/develop/development-builds/introduction/) - it will not work with Expo Go because op-sqlite is a native module.
+
+### Setup
+
+1. Create a Turso database at https://turso.tech/app
+2. Get your database URL and auth token
+3. Create a `.env.local` file in the project root:
+
+   ```bash
+   EXPO_PUBLIC_TURSO_DB_URL=libsql://your-database.turso.io
+   EXPO_PUBLIC_TURSO_DB_AUTH_TOKEN=your-auth-token
+   ```
+
+4. Build a development build:
+
+   ```bash
+   npx expo run:ios
+   # or
+   npx expo run:android
+   ```
+
+If these environment variables are not set, the app will work in local-only mode and the sync button will not appear.
+
 ## Get a fresh project
 
 When you're ready, run:

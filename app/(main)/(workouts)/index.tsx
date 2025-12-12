@@ -1,24 +1,20 @@
-import { useState } from "react";
-import { Text, Pressable } from "react-native";
+import { useState, useEffect, useCallback } from "react";
+import { Text, Pressable, View, Alert, ActivityIndicator } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { useSQLiteContext } from "expo-sqlite";
-import * as schema from "@/db/schema";
 import { Workout } from "~/lib/types";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import WorkoutItem from "./workout-item";
+import { useDatabase } from "~/lib/db";
+import { RefreshCw } from "lucide-react-native";
 
 export default function WorkoutsScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  const db = useSQLiteContext();
-  const drizzleDb = drizzle(db, { schema });
-  useDrizzleStudio(db);
+  const { db, refreshKey, sync, isSyncAvailable } = useDatabase();
 
-  const { data } = useLiveQuery(
-    drizzleDb.query.workout.findMany({
+  const fetchWorkouts = useCallback(async () => {
+    const data = await db.query.workout.findMany({
       with: {
         exercises: {
           with: {
@@ -28,26 +24,62 @@ export default function WorkoutsScreen() {
           },
         },
       },
-    })
-  );
+    });
 
-  useEffect(() => {
-    if (!data) return;
-
-    data.sort(
+    const sorted = [...data].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
-    setWorkouts(data);
-  }, [data]);
+    setWorkouts(sorted);
+  }, [db]);
+
+  useEffect(() => {
+    fetchWorkouts();
+  }, [fetchWorkouts, refreshKey]);
+
+  const handleSync = async () => {
+    if (isSyncing) return;
+
+    setIsSyncing(true);
+    try {
+      const result = await sync();
+      Alert.alert(
+        result.success ? "Sync Complete" : "Sync Failed",
+        result.message
+      );
+    } catch (error) {
+      Alert.alert("Sync Error", "An unexpected error occurred");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const renderHeader = () => (
-    <Pressable
-      className="bg-green-500 dark:bg-green-600 p-4 rounded-lg mb-4 items-center"
-      onPress={() => router.push("/workout-form")}
-    >
-      <Text className="text-white font-bold text-base">Add Workout</Text>
-    </Pressable>
+    <View className="mb-4">
+      <Pressable
+        className="bg-green-500 dark:bg-green-600 p-4 rounded-lg mb-3 items-center"
+        onPress={() => router.push("/workout-form")}
+      >
+        <Text className="text-white font-bold text-base">Add Workout</Text>
+      </Pressable>
+
+      {isSyncAvailable && (
+        <Pressable
+          className="bg-blue-500 dark:bg-blue-600 p-3 rounded-lg flex-row items-center justify-center"
+          onPress={handleSync}
+          disabled={isSyncing}
+        >
+          {isSyncing ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <RefreshCw size={18} color="#fff" />
+          )}
+          <Text className="text-white font-bold text-sm ml-2">
+            {isSyncing ? "Syncing..." : "Sync with Cloud"}
+          </Text>
+        </Pressable>
+      )}
+    </View>
   );
 
   return (

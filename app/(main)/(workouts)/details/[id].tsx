@@ -1,40 +1,35 @@
-import { drizzle } from "drizzle-orm/expo-sqlite";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { Workout } from "~/lib/types";
-import * as schema from "@/db/schema";
 import { ClipboardList, Dumbbell } from "lucide-react-native";
 import { formatDate } from "~/lib/dateUtils";
+import { useDatabase } from "~/lib/db";
 
 export default function WorkoutDetails() {
   const { id } = useLocalSearchParams();
 
   const [workout, setWorkout] = useState<Workout>();
 
-  const db = useSQLiteContext();
-  const drizzleDb = drizzle(db, { schema });
+  const { db, refreshKey } = useDatabase();
 
   useEffect(() => {
     (async () => {
-      const data: Workout | undefined = await drizzleDb.query.workout.findFirst(
-        {
-          where: (workout, { eq }) => eq(workout.id, +id),
-          with: {
-            exercises: {
-              with: {
-                sets: {
-                  orderBy: (sets, { asc }) => [asc(sets.id)],
-                },
+      const data: Workout | undefined = await db.query.workout.findFirst({
+        where: (workout, { eq }) => eq(workout.id, +id),
+        with: {
+          exercises: {
+            with: {
+              sets: {
+                orderBy: (sets, { asc }) => [asc(sets.id)],
               },
             },
           },
-        }
-      );
+        },
+      });
       setWorkout(data);
     })();
-  }, []);
+  }, [id, refreshKey]);
 
   const formattedDate = formatDate(workout?.date);
 
